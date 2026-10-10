@@ -1,0 +1,14 @@
+# 浏览器缓存
+.edgecache/
+
+# 临时文件（以 _ 开头，按项目约定可随时删除）
+_*.html
+_*.js
+_*.png
+_*.pdf
+
+# WorkBuddy 工作区数据
+.workbuddy/
+
+# 中间产物
+color-preview.pdf
