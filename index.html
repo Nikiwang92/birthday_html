@@ -151,14 +151,15 @@ h2.title{
 .hero-art{position:relative;z-index:0;order:2;flex:1 1 auto;min-height:230px}
 .hero-art svg{display:block;width:100%;height:100%}
 
-/* 窄屏取景：桌面那套 1440×460 + xMidYMax slice 会横向裁到画面中段，
-   而小人画在 x=300、10.24 旗子在 x=832 —— 小人整个落在视野外（只剩山和旗子）。
-   办法：把 svg 放大到 220vw 再左移 33.6vw，让取景窗口对准「小人 → 旗子」这一段。
-   全部用 vw 表达，任何屏宽下取景范围恒定（约 x∈[220,875]）。
-   容器高度取 70.4vw，正好等于放大后 svg 的高度（460×2.2/14.4），上下不留空。 */
+/* 窄屏取景：桌面那套 1440×460 + xMidYMax slice 会横向裁到画面中段 —— 小人（x=300）、
+   旗杆（x=832）、旗面（→x=863）、"10.24" 文字（x=871~920）会依次被裁出画面。
+   办法：把 svg 放大到 185vw 再左移 28.3vw，让取景窗口对准「小人 → 旗子 + 10.24」整段。
+   全部用 vw 表达，任何屏宽下取景范围恒定（约 x∈[220,999]），
+   各元素落位：小人 9%、小径 13~69%、旗杆 79%、旗面 82%、"10.24" 83~90%。
+   容器高度取 59.1vw，正好等于放大后 svg 的高度（460×1.85/14.4），上下不留空。 */
 @media (max-width:760px){
-  .hero-art{flex:0 0 auto;height:70.4vw;min-height:0;margin-top:auto;overflow:hidden}
-  .hero-art svg{width:220vw;height:auto;max-width:none;position:relative;left:-33.6vw}
+  .hero-art{flex:0 0 auto;height:59.1vw;min-height:0;margin-top:auto;overflow:hidden}
+  .hero-art svg{width:185vw;height:auto;max-width:none;position:relative;left:-28.3vw}
 }
 .hero-inner{
   position:relative;z-index:2;flex:0 0 auto;order:1;
@@ -1038,6 +1039,57 @@ h1.hero-title{
   font-family:var(--font-hand);font-size:13px;color:var(--ink-3);text-align:center;margin-top:4px;
 }
 
+/* ============================================================
+   生日快乐歌：右下角悬浮播放键（口琴主旋律 + 吉他伴奏，实时合成）
+   ============================================================ */
+.music-fab{
+  position:fixed;right:22px;bottom:22px;z-index:90;
+  display:inline-flex;align-items:center;gap:10px;
+  padding:10px 20px 10px 14px;
+  background:var(--card);
+  color:var(--ink);
+  border:2px solid var(--ink);
+  border-radius:999px;
+  font-family:var(--font-hand);font-size:16px;font-weight:400;line-height:1.15;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:4px 4px 0 rgba(0,0,0,.14);
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease),
+             background .3s var(--ease),color .3s var(--ease);
+  /* 出场后轻轻晃三下，提示这里有东西可点 */
+  animation:fabNudge .9s var(--ease) 1.6s 3;
+}
+.music-fab:hover{transform:translate(-1px,-2px) rotate(-1deg);box-shadow:6px 6px 0 rgba(0,0,0,.16)}
+.music-fab:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.14)}
+.music-fab .mf-ico{
+  flex:0 0 auto;display:grid;place-items:center;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--sand);color:#2b2f2d;
+  border:2px solid var(--ink);
+  transition:background .3s var(--ease);
+}
+.music-fab .mf-ico svg{width:17px;height:17px;display:block}
+.music-fab .mf-txt{display:flex;flex-direction:column;gap:1px}
+.music-fab .mf-sub{font-family:var(--sans);font-size:11px;letter-spacing:.02em;color:var(--ink-3)}
+
+/* 播放中：换成雾蓝底 + 音符跳动 */
+.music-fab.is-on{background:var(--pine);color:#fff}
+.music-fab.is-on .mf-ico{background:#fff;color:var(--pine);animation:fabBeat .62s var(--ease) infinite}
+.music-fab.is-on .mf-sub{color:rgba(255,255,255,.72)}
+
+@keyframes fabNudge{0%,100%{transform:rotate(0)}30%{transform:rotate(-2.4deg)}70%{transform:rotate(2deg)}}
+@keyframes fabBeat{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(-2.5px) scale(1.06)}}
+
+@media (max-width:640px){
+  .music-fab{right:14px;bottom:14px;padding:9px 16px 9px 12px;gap:8px;font-size:15px}
+  .music-fab .mf-ico{width:29px;height:29px}
+  .music-fab .mf-ico svg{width:15px;height:15px}
+  .music-fab .mf-sub{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .music-fab,.music-fab .mf-ico{animation:none !important}
+}
+
 </style>
 </head>
 
@@ -1826,6 +1878,22 @@ h1.hero-title{
   </div>
 </footer>
 
+<!-- 生日快乐歌（口琴 + 吉他，实时合成，无音频文件） -->
+<button class="music-fab" id="musicFab" type="button" aria-pressed="false"
+        aria-label="播放生日快乐歌（口琴与吉他版）">
+  <span class="mf-ico" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 17.5V5.2l10-2v12.3"/>
+      <ellipse cx="6.3" cy="17.6" rx="2.9" ry="2.4"/>
+      <ellipse cx="16.3" cy="15.5" rx="2.9" ry="2.4"/>
+    </svg>
+  </span>
+  <span class="mf-txt">
+    <span>生日快乐歌</span>
+    <span class="mf-sub" id="musicSub">口琴 · 吉他</span>
+  </span>
+</button>
+
 <script>
 (function () {
   'use strict';
@@ -2304,7 +2372,8 @@ h1.hero-title{
           hint.textContent = '蜡烛吹灭啦，愿望已经收下了。剩下的交给时间。';
           hint.classList.add('is-done');
         }
-        /* 庆祝烟花 */
+        /* 蜡烛全灭：生日快乐歌响起 + 连放烟花 */
+        if (window.__song) window.__song.play();
         if (window.__fwCelebrate) window.__fwCelebrate(5);
       } else if (left > 0 && hint) {
         hint.textContent = '还剩 ' + left + ' 根亮着，继续吹。';
@@ -2538,6 +2607,275 @@ h1.hero-title{
     });
 
     render();
+  })();
+
+  /* ==========================================================
+     生日快乐歌：口琴吹主旋律 + 吉他弹伴奏
+     —— Web Audio 实时合成，不引入任何音频文件（单文件离线可用、无版权问题）
+     ========================================================== */
+  (function song() {
+    var fab = document.getElementById('musicFab');
+    var sub = document.getElementById('musicSub');
+    if (!fab) return;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) { fab.style.display = 'none'; return; }
+
+    var ctx = null, comp = null, conv = null, bus = null, master = null;
+    var wave = null, noiseBuf = null;
+    var playing = false, endTimer = null;
+
+    var BEAT = 0.55;   /* 每拍秒数，约 109 BPM，跟原曲的从容感一致 */
+
+    /* 主旋律：Happy Birthday（C 大调），[MIDI 音高, 拍数] */
+    var MELODY = [
+      [67, .75], [67, .25], [69, 1], [67, 1], [72, 1], [71, 2],
+      [67, .75], [67, .25], [69, 1], [67, 1], [74, 1], [72, 2],
+      [67, .75], [67, .25], [79, 1], [76, 1], [72, 1], [71, 1], [69, 2],
+      [77, .75], [77, .25], [76, 1], [72, 1], [74, 1], [72, 2]
+    ];
+    /* 每句的和声走向 */
+    var CHORDS = [
+      'C', 'C', 'C', 'C', 'G7', 'G7',
+      'C', 'C', 'C', 'C', 'G7', 'C',
+      'C', 'C', 'C', 'C', 'C', 'G7', 'F',
+      'F', 'F', 'C', 'C', 'G7', 'C'
+    ];
+    var VOICE = {
+      C:  { bass: 48, notes: [55, 60, 64] },   /* C3 + G3 C4 E4 */
+      F:  { bass: 53, notes: [57, 60, 65] },   /* F3 + A3 C4 F4 */
+      G7: { bass: 43, notes: [55, 59, 65] }    /* G2 + G3 B3 F4 */
+    };
+
+    function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+    function noise() {
+      if (noiseBuf) return noiseBuf;
+      var len = Math.floor(ctx.sampleRate * 0.5);
+      noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+      var d = noiseBuf.getChannelData(0);
+      for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      return noiseBuf;
+    }
+
+    /* 简易脉冲响应：给两种乐器套同一个"小房间" */
+    function makeIR(sec, decay) {
+      var len = Math.max(1, Math.floor(ctx.sampleRate * sec));
+      var buf = ctx.createBuffer(2, len, ctx.sampleRate);
+      for (var ch = 0; ch < 2; ch++) {
+        var d = buf.getChannelData(ch);
+        for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+      }
+      return buf;
+    }
+
+    function init() {
+      ctx = new AC();
+      master = ctx.createGain();
+      master.gain.value = 0;
+      comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -17; comp.knee.value = 24; comp.ratio.value = 3.4;
+      comp.attack.value = 0.006; comp.release.value = 0.28;
+      conv = ctx.createConvolver();
+      conv.buffer = makeIR(1.8, 2.6);
+      var wet = ctx.createGain(); wet.gain.value = 0.16;
+      conv.connect(wet); wet.connect(comp);
+      comp.connect(master); master.connect(ctx.destination);
+    }
+
+    function newBus() {
+      bus = ctx.createGain(); bus.gain.value = 0.92;
+      bus.connect(comp); bus.connect(conv);
+    }
+
+    /* —— 吉他拨弦：多分音叠加 + 拨片瞬态 + 阻尼式低通下滑 —— */
+    var PART = [[1, 1, 1], [2, .4, .55], [3, .2, .4], [4, .11, .3]];
+    function pluck(f, t, dur, gain, bright) {
+      var g0 = ctx.createGain(); g0.gain.value = gain;
+      g0.connect(bus);
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.Q.value = 0.6;
+      lp.frequency.setValueAtTime(bright || 4200, t);
+      lp.frequency.exponentialRampToValueAtTime(Math.max(380, f * 3), t + dur * 0.8);
+      lp.connect(g0);
+
+      for (var i = 0; i < PART.length; i++) {
+        var p = PART[i];
+        var o = ctx.createOscillator();
+        o.type = i === 0 ? 'triangle' : 'sine';
+        o.frequency.value = f * p[0];
+        o.detune.value = Math.random() * 6 - 3;
+        var g = ctx.createGain();
+        var d = Math.max(0.12, dur * p[2]);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(Math.max(0.001, p[1]), t + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o.connect(g); g.connect(lp);
+        o.start(t); o.stop(t + d + 0.05);
+      }
+
+      var ns = ctx.createBufferSource(); ns.buffer = noise();
+      var bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = Math.min(6000, f * 4.2); bp.Q.value = 1.1;
+      var ng = ctx.createGain();
+      ng.gain.setValueAtTime(gain * 0.5, t);
+      ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+      ns.connect(bp); bp.connect(ng); ng.connect(g0);
+      ns.start(t); ns.stop(t + 0.06);
+    }
+
+    function strum(v, t, gain) {
+      for (var i = 0; i < v.notes.length; i++) {
+        pluck(hz(v.notes[i]), t + i * 0.022, 1.8, gain * (1 - i * 0.12), 3300);
+      }
+    }
+
+    /* —— 口琴：簧片音色（奇次谐波为主 + 双簧微失谐 + 迟起颤音 + 吹气声） —— */
+    function reedWave() {
+      if (wave) return wave;
+      var n = 20, real = new Float32Array(n), imag = new Float32Array(n);
+      var amp = [0, 1, .05, .5, .04, .36, .03, .25, .02, .17, .015, .11, .012, .07, .01, .045, .008, .028, .005, .016];
+      for (var i = 0; i < n; i++) imag[i] = amp[i];
+      wave = ctx.createPeriodicWave(real, imag);
+      return wave;
+    }
+
+    function reed(f, t, dur, gain) {
+      var att = 0.07, rel = 0.15;
+      var g = ctx.createGain();
+      var hold = Math.max(t + att + 0.02, t + dur - 0.05);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(gain, t + att);
+      g.gain.setValueAtTime(gain, hold);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur + rel);
+      g.connect(bus);
+
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.Q.value = 0.5;
+      lp.frequency.value = Math.min(4400, f * 7 + 900);
+      var pk = ctx.createBiquadFilter();
+      pk.type = 'peaking'; pk.frequency.value = 1750; pk.gain.value = 4.5; pk.Q.value = 1.1;
+      var hp = ctx.createBiquadFilter();
+      hp.type = 'highpass'; hp.frequency.value = 230;
+      lp.connect(pk); pk.connect(hp); hp.connect(g);
+
+      var w = reedWave();
+      var o1 = ctx.createOscillator(); o1.setPeriodicWave(w);
+      o1.frequency.value = f; o1.detune.value = -3;
+      var o2 = ctx.createOscillator(); o2.setPeriodicWave(w);
+      o2.frequency.value = f; o2.detune.value = 5;
+      var o2g = ctx.createGain(); o2g.gain.value = 0.5;
+      o1.connect(lp); o2.connect(o2g); o2g.connect(lp);
+
+      /* 颤音：约半秒后才摇起来，像吹奏者按气息加上的 */
+      var vib = ctx.createOscillator(); vib.type = 'sine'; vib.frequency.value = 5.2;
+      var vibG = ctx.createGain();
+      vibG.gain.setValueAtTime(0, t);
+      vibG.gain.linearRampToValueAtTime(7, t + Math.min(0.55, dur * 0.7 + 0.12));
+      vib.connect(vibG); vibG.connect(o1.detune); vibG.connect(o2.detune);
+      vib.start(t); vib.stop(t + dur + rel + 0.05);
+
+      /* 吹气声 */
+      var ns = ctx.createBufferSource(); ns.buffer = noise(); ns.loop = true;
+      var nf = ctx.createBiquadFilter();
+      nf.type = 'bandpass'; nf.frequency.value = 2400; nf.Q.value = 0.7;
+      var ng = ctx.createGain(); ng.gain.value = gain * 0.1;
+      ns.connect(nf); nf.connect(ng); ng.connect(g);
+      ns.start(t); ns.stop(t + dur + rel + 0.05);
+
+      o1.start(t); o1.stop(t + dur + rel + 0.05);
+      o2.start(t); o2.stop(t + dur + rel + 0.05);
+    }
+
+    function schedule() {
+      var t0 = ctx.currentTime + 0.14;
+      var i, b, v;
+
+      /* 前奏 4 拍：C → G7 分解和弦 */
+      var intro = ['C', 'G7'];
+      for (i = 0; i < intro.length; i++) {
+        v = VOICE[intro[i]];
+        var seq = [v.bass, v.notes[0], v.notes[1], v.notes[2]];
+        for (b = 0; b < 4; b++) {
+          pluck(hz(seq[b]), t0 + (i * 2 + b * 0.5) * BEAT, BEAT * 3, b === 0 ? 0.15 : 0.085, 3200);
+        }
+      }
+
+      /* 主旋律（口琴）+ 逐拍铺格子 */
+      var tMel = t0 + 4 * BEAT;
+      var cursor = 0;
+      var grid = [];
+      for (i = 0; i < MELODY.length; i++) {
+        var n = MELODY[i];
+        reed(hz(n[0]), tMel + cursor * BEAT, Math.max(0.22, n[1] * BEAT * 0.94), 0.185);
+        var slots = Math.round(n[1] * 4);
+        for (b = 0; b < slots; b++) grid.push(CHORDS[i]);
+        cursor += n[1];
+      }
+
+      /* 吉他：每拍一根低音，换和弦时扫一遍 */
+      for (i = 0; i < grid.length; i++) {
+        var t = tMel + (i / 4) * BEAT;
+        if (i % 4 === 0) pluck(hz(VOICE[grid[i]].bass), t, BEAT * 1.5, 0.15, 2100);
+        if (i === 0 || grid[i] !== grid[i - 1]) strum(VOICE[grid[i]], t, 0.075);
+      }
+
+      /* 尾句：最后一记 C 和弦让它自己散掉 */
+      var tEnd = tMel + cursor * BEAT;
+      pluck(hz(48), tEnd, 3.2, 0.16, 1900);
+      strum(VOICE.C, tEnd + 0.02, 0.085);
+
+      return tEnd + 4.2 - t0;   /* 总时长（秒） */
+    }
+
+    function resetUI() {
+      playing = false;
+      fab.classList.remove('is-on');
+      fab.setAttribute('aria-pressed', 'false');
+      if (sub) sub.textContent = '口琴 · 吉他';
+    }
+
+    function start() {
+      if (playing) return;
+      if (!ctx) init();
+      if (ctx.state === 'suspended') ctx.resume();
+      if (endTimer) { clearTimeout(endTimer); endTimer = null; }
+      if (bus) { try { bus.disconnect(); } catch (e) {} }
+      newBus();
+
+      var now = ctx.currentTime;
+      master.gain.cancelScheduledValues(now);
+      master.gain.setValueAtTime(0.0001, now);
+      master.gain.linearRampToValueAtTime(0.85, now + 0.5);
+
+      var total = schedule();
+      playing = true;
+      fab.classList.add('is-on');
+      fab.setAttribute('aria-pressed', 'true');
+      if (sub) sub.textContent = '正在播放 · 点按停止';
+
+      endTimer = setTimeout(function () {
+        if (bus) { try { bus.disconnect(); } catch (e) {} bus = null; }
+        resetUI();
+      }, (total + 1.0) * 1000);
+    }
+
+    function stop() {
+      if (!playing) return;
+      if (endTimer) { clearTimeout(endTimer); endTimer = null; }
+      var now = ctx.currentTime;
+      master.gain.cancelScheduledValues(now);
+      master.gain.setValueAtTime(master.gain.value, now);
+      master.gain.linearRampToValueAtTime(0.0001, now + 0.28);
+      var dying = bus;
+      setTimeout(function () { if (dying) { try { dying.disconnect(); } catch (e) {} } }, 520);
+      bus = null;
+      resetUI();
+    }
+
+    function toggle() { if (playing) { stop(); } else { start(); } }
+
+    fab.addEventListener('click', toggle);
+    window.__song = { play: start, stop: stop, toggle: toggle };
   })();
 
 })();
