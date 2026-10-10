@@ -150,6 +150,16 @@ h2.title{
 .hero{position:relative;height:100vh;height:100svh;min-height:640px;display:flex;flex-direction:column;overflow:hidden}
 .hero-art{position:relative;z-index:0;order:2;flex:1 1 auto;min-height:230px}
 .hero-art svg{display:block;width:100%;height:100%}
+
+/* 窄屏取景：桌面那套 1440×460 + xMidYMax slice 会横向裁到画面中段，
+   而小人画在 x=300、10.24 旗子在 x=832 —— 小人整个落在视野外（只剩山和旗子）。
+   办法：把 svg 放大到 220vw 再左移 33.6vw，让取景窗口对准「小人 → 旗子」这一段。
+   全部用 vw 表达，任何屏宽下取景范围恒定（约 x∈[220,875]）。
+   容器高度取 70.4vw，正好等于放大后 svg 的高度（460×2.2/14.4），上下不留空。 */
+@media (max-width:760px){
+  .hero-art{flex:0 0 auto;height:70.4vw;min-height:0;margin-top:auto;overflow:hidden}
+  .hero-art svg{width:220vw;height:auto;max-width:none;position:relative;left:-33.6vw}
+}
 .hero-inner{
   position:relative;z-index:2;flex:0 0 auto;order:1;
   padding:clamp(42px,6.6vh,84px) 24px 16px;
