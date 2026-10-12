@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eee7d8">
+<title>十月廿四 · 生日帖</title>
+<style>
+/* ============================================================================
+   生日帖 · 宣纸朱印
+   —— 单文件、零外部请求（字体全部用系统自带，断网也能看）
+   —— 首页日期是一张「撕日历」；信是「一卷」，拆开封条从上往下展开
+   —— 信正文横排（从上往下逐行读），界格走横线
+   ============================================================================ */
+*,*::before,*::after{box-sizing:border-box}
+
+:root{
+  /* 纸 */
+  --paper:#eee7d8;
+  --paper-2:#e7dfcd;
+  --paper-3:#ded3ba;
+  /* 墨 */
+  --ink:#1b1916;
+  --ink-2:#4b463d;
+  --ink-3:#8b8375;
+  /* 线 */
+  --line:rgba(27,25,22,.17);
+  --line-2:rgba(27,25,22,.08);
+  /* 朱砂 */
+  --zhu:#b0342a;
+  --zhu-2:#8c2721;
+  --zhu-soft:rgba(176,52,42,.14);
+  /* 石青（极少用） */
+  --qing:#3f5f5e;
+
+  /* 字体：全部系统自带。正文用仿宋（中式信笺），标题用楷体 */
+  --serif:"Songti SC","Noto Serif SC","Source Han Serif SC",STSong,SimSun,serif;
+  --kai:"Kaiti SC",STKaiti,KaiTi,"楷体","Songti SC",SimSun,serif;
+  --fang:"FangSong",STFangsong,"仿宋","Songti SC",SimSun,serif;
+  --en:"Times New Roman",Georgia,"Songti SC",SimSun,serif;
+
+  --ease:cubic-bezier(.22,.68,.18,1);
+}
+
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:16px;
+  line-height:1.95;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* 纸面上的两处墨晕，给纯色底一点呼吸 */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(34vw 26vw at 84% 4%,rgba(176,52,42,.035),transparent 70%),
+    radial-gradient(40vw 30vw at 8% 34%,rgba(63,95,94,.03),transparent 72%),
+    radial-gradient(44vw 34vw at 74% 92%,rgba(27,25,22,.032),transparent 74%);
+}
+
+/* 纸纤维颗粒（内联 SVG，无外部请求） */
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px 180px;
+}
+
+/* 右侧竖读书签（卷轴进度） */
+.spine{
+  position:fixed;top:0;right:0;width:2px;height:100%;z-index:5;
+  background:linear-gradient(180deg,var(--zhu) 0 var(--p,0%),rgba(27,25,22,.07) 0);
+}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(22px,4.4vw,54px)}
+main{position:relative;z-index:2}
+.sec{padding:clamp(76px,11vw,150px) 0;position:relative}
+
+/* ---------------------------------------------------------------- 通用小件 */
+.sh{
+  display:flex;align-items:baseline;gap:clamp(12px,1.6vw,20px);
+  margin-bottom:clamp(34px,5vw,62px);
+}
+.sh-no{
+  flex:0 0 auto;
+  font-family:var(--kai);font-size:13px;color:var(--zhu);
+  width:26px;height:26px;line-height:24px;text-align:center;
+  border:1px solid var(--zhu-soft);border-radius:3px;
+  transform:translateY(-2px);
+}
+.sh-t{
+  margin:0;font-family:var(--kai);font-weight:400;
+  font-size:clamp(23px,3.1vw,34px);letter-spacing:.16em;color:var(--ink);
+}
+.sh-rule{
+  flex:1 1 auto;height:1px;background:var(--line);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 1.2s var(--ease) .1s;
+}
+.sh.in .sh-rule{transform:scaleX(1)}
+
+/* 入场 */
+[data-rv]{opacity:0;transform:translateY(16px);
+  transition:opacity .95s var(--ease),transform .95s var(--ease)}
+[data-rv].in{opacity:1;transform:none}
+
+/* ============================================================================
+   一 · 天头（封面）
+   ============================================================================ */
+.cover{
+  position:relative;z-index:2;
+  min-height:100vh;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(26px,5vw,64px) 0;
+}
+.cv-top{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding-bottom:clamp(26px,5vw,54px);
+  border-bottom:1px solid var(--line);
+  margin-bottom:clamp(30px,5.4vw,64px);
+}
+.cv-mark{
+  font-family:var(--kai);font-size:12.5px;letter-spacing:.3em;color:var(--ink-3);
+}
+.cv-mark b{font-family:var(--en);font-weight:400;color:var(--zhu);letter-spacing:.16em}
+
+.cv-mid{
+  display:flex;align-items:flex-start;gap:clamp(20px,3.4vw,64px);
+  padding-left:clamp(0px,1.6vw,26px);
+}
+
+/* 巨大的日期 —— 做成一张「撕日历」 */
+.cv-date{order:1;flex:0 0 auto;padding-top:clamp(0px,1vw,14px)}
+
+.cal{
+  --num:clamp(74px,15.4vw,196px);
+  --rod:26px;                       /* 铁圈区高度 */
+  --roll:76px;                      /* 卷起时露出的高度（信卷用） */
+  position:relative;display:inline-block;
+  padding-top:var(--rod);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.cal-rings{
+  position:absolute;top:0;left:0;right:0;height:var(--rod);
+  display:flex;justify-content:center;gap:clamp(13px,2.2vw,26px);
+  pointer-events:none;
+}
+.cal-rings i{
+  width:10px;height:calc(var(--rod) + 4px);border-radius:50%;
+  border:1.6px solid rgba(27,25,22,.34);border-top-color:transparent;
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(27,25,22,.05));
+  box-shadow:inset 0 -4px 4px -2px rgba(27,25,22,.16);
+  transform:translateY(-3px);
+}
+.cal-perf{
+  display:block;height:0;margin:5px 0 4px;
+  border-top:1.5px dashed rgba(27,25,22,.3);
+}
+.cal-body{position:relative}
+
+.cv-num{
+  position:relative;display:flex;align-items:baseline;
+  font-family:var(--en);font-weight:400;
+  font-size:var(--num);
+  line-height:.84;letter-spacing:-.02em;
+  font-feature-settings:"lnum" 1,"tnum" 1;
+  color:var(--ink);
+  margin:0;
+  animation:calLand 1s var(--ease) 2.3s both;
+}
+.cv-num .n-d{color:var(--zhu)}
+.cv-num .n-s{
+  font-size:.5em;color:var(--ink-3);
+  margin:0 .1em;transform:translateY(-.12em);
+}
+
+/* 被撕下的那一页（前一天） */
+.cal-tear{
+  position:absolute;inset:0;z-index:2;
+  display:flex;align-items:center;padding-left:.02em;
+  background:linear-gradient(180deg,#f5efe2,#e8dfcb 62%,#e0d5bd);
+  box-shadow:0 1px 0 rgba(255,255,255,.75) inset,0 18px 26px -20px rgba(27,25,22,.75);
+  transform-origin:50% 0;will-change:transform,opacity;pointer-events:none;
+  animation:calTear 1.9s cubic-bezier(.44,.03,.58,1) .75s both;
+}
+.cal-tear::before{                  /* 撕口：锯齿轮廓 */
+  content:'';position:absolute;left:0;right:0;top:-5px;height:6px;
+  background-image:
+    linear-gradient(135deg,transparent 50%,#e8dfcb 50%),
+    linear-gradient(-135deg,transparent 50%,#e8dfcb 50%);
+  background-size:9px 6px;background-position:0 0,4.5px 0;background-repeat:repeat-x;
+}
+.cal-tear .ct-num{
+  margin:0;display:flex;align-items:baseline;
+  font-family:var(--en);font-size:var(--num);line-height:.84;letter-spacing:-.02em;
+  color:rgba(27,25,22,.40);
+}
+.cal-tear .ct-num i{
+  font-style:normal;font-size:.5em;color:rgba(27,25,22,.26);
+  margin:0 .1em;transform:translateY(-.12em);
+}
+.cal-tear .ct-wk{
+  position:absolute;right:.04em;bottom:.06em;
+  font-family:var(--kai);font-size:clamp(11px,1.15vw,13px);
+  letter-spacing:.3em;color:rgba(27,25,22,.32);
+}
+@keyframes calTear{
+  0%{transform:none;opacity:1}
+  12%{transform:translateY(3px) rotate(-.8deg) scaleX(1.006)}
+  40%{transform:translateY(30%) rotate(2.4deg) skewX(-1.4deg);opacity:1}
+  70%{transform:translateY(84%) rotate(7.5deg) skewX(-4deg);opacity:.85}
+  100%{transform:translateY(158%) rotate(15deg) skewX(-8deg);opacity:0}
+}
+@keyframes calLand{
+  0%{transform:translateY(-6px) scale(.99)}
+  58%{transform:translateY(2px) scale(1.008)}
+  100%{transform:none}
+}
+/* 点一下重放：整体提前，连得紧凑些 */
+.cal.replay .cal-tear{animation:calTear 1.9s cubic-bezier(.44,.03,.58,1) .10s both}
+.cal.replay .cv-num{animation:calLand 1s var(--ease) 1.70s both}
+
+.cv-cap{
+  margin:clamp(12px,2vw,22px) 0 0;
+  font-family:var(--kai);font-size:clamp(12.5px,1.4vw,15px);
+  letter-spacing:.42em;color:var(--ink-3);
+}
+.cal-hint{
+  margin:.85em 0 0;font-family:var(--kai);font-size:11px;
+  letter-spacing:.26em;color:var(--ink-3);opacity:0;
+  animation:calHintIn .9s var(--ease) 3s both;
+}
+@keyframes calHintIn{to{opacity:.58}}
+
+/* 竖排标题 —— 题字，印钤在它下方 */
+.cv-title-col{
+  order:3;flex:0 0 auto;
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(16px,2.4vw,30px);
+}
+.cv-title{
+  margin:0;
+  writing-mode:vertical-rl;text-orientation:upright;
+  font-family:var(--kai);font-weight:400;
+  font-size:clamp(30px,4.6vw,60px);
+  letter-spacing:.26em;color:var(--ink);
+  padding-bottom:.12em;
+}
+.cv-title span{display:inline-block;opacity:0;transform:translateY(-12px);
+  animation:inkDrop 1.1s var(--ease) forwards}
+.cv-title span:nth-child(1){animation-delay:.5s}
+.cv-title span:nth-child(2){animation-delay:.72s}
+.cv-title span:nth-child(3){animation-delay:.94s}
+@keyframes inkDrop{to{opacity:1;transform:none}}
+
+/* 印（题款下钤的那一方） */
+.seal{
+  --sz:88px;
+  position:relative;flex:0 0 auto;
+  width:var(--sz);height:var(--sz);
+  display:grid;grid-template-columns:1fr 1fr;place-items:center;
+  padding:calc(var(--sz)*.1);
+  border:0;border-radius:5px;cursor:pointer;
+  background:var(--zhu);
+  color:var(--paper);
+  font-family:var(--kai);font-size:calc(var(--sz)*.27);
+  letter-spacing:0;line-height:1;
+  box-shadow:
+    0 0 0 1px rgba(140,39,33,.55),
+    0 1px 0 rgba(255,255,255,.1) inset,
+    0 8px 22px -12px rgba(140,39,33,.55);
+  transform:rotate(-3.6deg);
+  transition:transform .38s var(--ease),box-shadow .38s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.seal span{display:block;transform:translateY(-1px)}
+.seal::after{                 /* 印泥不匀 */
+  content:'';position:absolute;inset:0;border-radius:5px;pointer-events:none;
+  background:
+    radial-gradient(circle at 22% 18%,rgba(255,255,255,.22),transparent 42%),
+    radial-gradient(circle at 78% 82%,rgba(0,0,0,.16),transparent 46%);
+  mix-blend-mode:screen;
+}
+.seal:hover{transform:rotate(-1.6deg) scale(1.04)}
+.seal:focus-visible{outline:2px solid var(--zhu-2);outline-offset:5px}
+.seal.stamping{animation:stampIn .46s cubic-bezier(.2,1.5,.34,1)}
+@keyframes stampIn{
+  0%{transform:rotate(-3.6deg) scale(1.34);filter:blur(1.6px)}
+  55%{transform:rotate(-2.8deg) scale(.955)}
+  100%{transform:rotate(-3.6deg) scale(1);filter:none}
+}
+
+.cv-bot{margin-top:clamp(34px,6vw,68px)}
+.cv-line{display:block;width:52px;height:2px;background:var(--zhu);margin-bottom:clamp(18px,2.4vw,26px)}
+.cv-sub{
+  margin:0;font-family:var(--kai);
+  font-size:clamp(14px,1.7vw,18px);letter-spacing:.24em;color:var(--ink-2);
+}
+.cv-sub.dim{color:var(--ink-3);font-size:clamp(12.5px,1.4vw,14px);margin-top:10px;letter-spacing:.28em}
+.cv-scroll{
+  display:inline-block;margin-top:clamp(24px,4vw,44px);
+  font-family:var(--en);font-size:13px;letter-spacing:.3em;color:var(--ink-3);
+  animation:cue 2.6s ease-in-out infinite;
+}
+@keyframes cue{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(7px);opacity:1}}
+
+/* ============================================================================
+   二 · 今日（帖）
+   ============================================================================ */
+.post{
+  display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(22px,4vw,58px);align-items:center;
+  border-top:1px solid var(--ink);border-bottom:1px solid var(--line);
+  padding:clamp(26px,4vw,44px) 0;
+}
+.post-cd{display:flex;align-items:flex-end;gap:clamp(12px,1.8vw,20px);flex-wrap:wrap}
+.cd-stack{display:flex;flex-direction:column;gap:.4em;padding-bottom:.25em}
+.cd-clock{
+  display:inline-flex;align-items:baseline;gap:1px;
+  font-family:var(--en);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;
+  font-size:clamp(15px,1.9vw,21px);color:var(--ink-2);letter-spacing:.02em;
+}
+.cd-clock[hidden]{display:none}
+.cd-clock i{font-style:normal}
+.cd-clock em{font-style:normal;color:var(--ink-3);opacity:.65;margin:0 .12em}
+.cd-clock #cdH{color:var(--ink)}
+.cd-num{
+  font-family:var(--en);font-weight:400;font-variant-numeric:tabular-nums;
+  font-size:clamp(58px,9.6vw,116px);line-height:.84;color:var(--zhu);
+}
+.cd-lbl{font-family:var(--kai);font-size:clamp(13px,1.6vw,17px);letter-spacing:.24em;color:var(--ink-3)}
+.post-body{border-left:1px solid var(--line);padding-left:clamp(22px,4vw,58px)}
+.post-l1{
+  margin:0;font-family:var(--en);font-size:clamp(13px,1.5vw,15px);
+  letter-spacing:.2em;color:var(--ink-3);
+}
+.post-l1 em{font-style:normal;color:var(--ink)}
+.post-l2{margin:clamp(12px,1.8vw,18px) 0 0;font-size:clamp(15.5px,1.7vw,18px);color:var(--ink)}
+.post-l2 b{font-family:var(--en);font-weight:400;color:var(--zhu);font-size:1.12em}
+.post-l3{margin:8px 0 0;font-family:var(--kai);font-size:clamp(13px,1.5vw,15px);color:var(--ink-3);letter-spacing:.08em}
+
+/* ============================================================================
+   三 · 几笔数
+   ============================================================================ */
+.figs{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.fig{
+  margin:0;padding:clamp(22px,3vw,34px) clamp(14px,2.2vw,30px) 0 0;
+  position:relative;
+}
+.fig + .fig{border-left:1px solid var(--line);padding-left:clamp(18px,2.6vw,36px)}
+.fig::before{
+  content:'';position:absolute;top:0;left:0;width:34px;height:2px;background:var(--zhu);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .9s var(--ease) .18s;
+}
+.fig.in::before{transform:scaleX(1)}
+.fig b{
+  display:block;font-family:var(--en);font-weight:400;
+  font-variant-numeric:tabular-nums;color:var(--ink);
+  font-size:clamp(28px,3.5vw,50px);line-height:1;letter-spacing:-.01em;
+  white-space:nowrap;
+}
+.fig b.date{font-size:clamp(19px,2.1vw,29px);letter-spacing:0}
+.fig figcaption{
+  margin-top:clamp(12px,1.6vw,18px);
+  font-family:var(--kai);font-size:clamp(12.5px,1.4vw,14.5px);
+  letter-spacing:.16em;color:var(--ink-3);
+}
+
+/* ============================================================================
+   四 · 几件事（编年）
+   ============================================================================ */
+.chron{list-style:none;margin:0;padding:0}
+.chron li{
+  display:grid;grid-template-columns:clamp(128px,17vw,190px) 1fr;
+  gap:clamp(16px,3vw,44px);
+  padding:clamp(20px,2.8vw,30px) 0;
+  border-top:1px solid var(--line-2);
+  position:relative;
+}
+.chron li:last-child{border-bottom:1px solid var(--line-2)}
+.chron li::after{
+  content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:var(--line);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 1s var(--ease);
+}
+.chron li.in::after{transform:scaleX(1)}
+.cy{
+  font-family:var(--kai);font-size:clamp(12.5px,1.4vw,14px);
+  letter-spacing:.2em;color:var(--zhu);padding-top:.35em;
+}
+.chron h3{
+  margin:0;font-family:var(--kai);font-weight:400;
+  font-size:clamp(18px,2.2vw,23px);letter-spacing:.1em;color:var(--ink);
+}
+.chron p{margin:.5em 0 0;font-size:clamp(14px,1.55vw,15.5px);color:var(--ink-2);max-width:44ch}
+
+/* ============================================================================
+   四 · 想一起做的事（还没做的那些）
+   ============================================================================ */
+.wish-lead{
+  margin:0 0 clamp(24px,3.4vw,40px);
+  font-family:var(--kai);font-size:clamp(14px,1.6vw,16.5px);
+  letter-spacing:.1em;color:var(--ink-2);
+}
+.wish{list-style:none;margin:0;padding:0}
+.wish li{
+  display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(14px,2.2vw,26px);align-items:start;
+  padding:clamp(18px,2.6vw,30px) 0;
+  border-top:1px solid var(--line-2);
+  cursor:pointer;position:relative;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .45s var(--ease),
+             opacity .95s var(--ease),transform .95s var(--ease);
+}
+.wish li:last-child{border-bottom:1px solid var(--line-2)}
+.wish li::before{
+  content:'';position:absolute;top:-1px;left:0;width:100%;height:1px;
+  background:var(--zhu);transform:scaleX(0);transform-origin:left;
+  transition:transform .9s var(--ease);
+}
+.wish li.in::before{transform:scaleX(1)}
+.wish li:hover{background:rgba(176,52,42,.022)}
+.wish li:focus-visible{outline:2px solid var(--zhu-soft);outline-offset:2px}
+
+.wck{
+  width:23px;height:23px;flex:0 0 auto;margin-top:.42em;position:relative;
+  border:1px solid rgba(176,52,42,.5);border-radius:3px;
+  background:linear-gradient(180deg,rgba(176,52,42,.05),rgba(176,52,42,0));
+  transition:background-color .4s var(--ease);
+}
+.wish li.done .wck{background:rgba(176,52,42,.09)}
+.wck::after{                      /* 一勾 */
+  content:'';position:absolute;left:50%;top:47%;
+  width:12px;height:6px;
+  border-left:2px solid var(--zhu);border-bottom:2px solid var(--zhu);
+  transform:translate(-50%,-62%) rotate(-45deg) scale(.3);
+  opacity:0;
+  transition:transform .42s cubic-bezier(.2,1.5,.4,1),opacity .24s var(--ease);
+}
+.wish li.done .wck::after{opacity:1;transform:translate(-50%,-62%) rotate(-45deg) scale(1)}
+
+.wish h3{
+  margin:0;font-family:var(--kai);font-weight:400;
+  font-size:clamp(17px,2.05vw,22px);letter-spacing:.1em;color:var(--ink);
+  transition:color .4s var(--ease);
+}
+.wish li.done h3{color:var(--zhu)}
+.wish p{
+  margin:.55em 0 0;font-size:clamp(14px,1.55vw,15.5px);
+  color:var(--ink-2);max-width:46ch;transition:color .4s var(--ease);
+}
+.wish li.done p{color:var(--ink-3)}
+.wish-tag{
+  display:inline-block;margin-left:.75em;vertical-align:.16em;
+  font-family:var(--kai);font-size:11px;letter-spacing:.2em;
+  color:var(--paper);background:var(--zhu);border-radius:2px;padding:2px 7px 1px;
+  opacity:0;transform:translateY(-4px);
+  transition:opacity .45s var(--ease),transform .45s var(--ease);
+}
+.wish li.done .wish-tag{opacity:1;transform:none}
+
+/* ============================================================================
+   五 · 信（一卷 · 从上往下逐行读）
+   ============================================================================ */
+.scroll-zone{position:relative}
+.scroll-hint{
+  margin:0 0 clamp(16px,2.4vw,26px);text-align:center;
+  font-family:var(--kai);font-size:clamp(12.5px,1.4vw,14px);
+  letter-spacing:.3em;color:var(--zhu);
+  transition:opacity .5s var(--ease),transform .5s var(--ease);
+}
+.scroll-hint.off{opacity:0;transform:translateY(-6px)}
+.scroll-hint em{font-style:normal;display:inline-block;animation:cue 2.6s ease-in-out infinite}
+
+.scroll{
+  --rod:24px;                       /* 木轴径 */
+  --roll:78px;                      /* 卷起时露出的高度 */
+  position:relative;width:min(100%,780px);margin:0 auto;
+  padding:0 clamp(2px,1vw,14px);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.scroll.open{cursor:default}
+
+/* 上下木轴 */
+.rod{
+  position:relative;height:var(--rod);border-radius:calc(var(--rod)/2);
+  background:linear-gradient(180deg,#d8c79c,#b39a6d 42%,#8e764e 78%,#6f5b3a);
+  box-shadow:0 3px 8px -3px rgba(27,25,22,.55),0 1px 0 rgba(255,255,255,.45) inset;
+}
+.rod i{
+  position:absolute;top:50%;width:calc(var(--rod)*1.45);height:calc(var(--rod)*1.45);
+  transform:translateY(-50%);border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#e7d9b3,#a48c62 58%,#6f5b3a);
+  box-shadow:0 3px 7px -3px rgba(27,25,22,.6),0 0 0 1px rgba(27,25,22,.16) inset;
+}
+.rod i:first-of-type{left:-8px}
+.rod i:last-of-type{right:-8px}
+
+/* 卷身 */
+.scroll-body{
+  position:relative;height:var(--roll);overflow:hidden;
+  transition:height 1.75s cubic-bezier(.5,.04,.2,1);
+  background:linear-gradient(180deg,rgba(27,25,22,.05),rgba(27,25,22,0));
+}
+.scroll-body::after{                 /* 卷起时的圆柱受光 */
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,
+    rgba(27,25,22,.34),rgba(27,25,22,.04) 30%,
+    rgba(255,255,255,.5) 52%,
+    rgba(27,25,22,.18) 76%,rgba(27,25,22,.4));
+  transition:opacity .75s var(--ease) .05s;
+}
+.scroll.open .scroll-body::after{opacity:0}
+
+.scroll-paper{
+  background:linear-gradient(180deg,#f6f0e3,#f1ead9 34%,#efe7d6);
+  padding:clamp(26px,4.4vw,52px) clamp(24px,4.6vw,56px) clamp(30px,5vw,58px);
+  box-shadow:
+    0 16px 22px -20px rgba(27,25,22,.9) inset,
+    0 -14px 20px -20px rgba(27,25,22,.7) inset,
+    0 30px 70px -60px rgba(27,25,22,.8);
+}
+
+/* 封条 */
+.band{
+  position:absolute;left:clamp(2px,1vw,14px);right:clamp(2px,1vw,14px);
+  top:var(--rod);height:var(--roll);
+  overflow:hidden;border:0;padding:0;background:none;cursor:pointer;
+  transition:opacity .4s var(--ease) .5s;
+  -webkit-tap-highlight-color:transparent;
+}
+.band:focus-visible{outline:2px solid var(--zhu);outline-offset:3px}
+.scroll.open .band{opacity:0;pointer-events:none}
+.band-half{
+  position:absolute;top:0;bottom:0;width:50.5%;
+  background:linear-gradient(180deg,#eee2c4,#ddcda5 50%,#c9b489);
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 6px 16px -12px rgba(27,25,22,.9);
+  transition:transform .75s cubic-bezier(.5,.03,.24,1),opacity .7s var(--ease);
+}
+.band-l{left:0;transform-origin:left center;display:flex;align-items:center;justify-content:flex-end;padding-right:14px}
+.band-l::after{
+  content:'亲启';font-family:var(--kai);font-size:13.5px;
+  letter-spacing:.26em;color:rgba(27,25,22,.66);
+}
+.band-r{right:0;transform-origin:right center}
+.scroll.open .band-l{transform:perspective(700px) rotateY(-92deg);opacity:0}
+.scroll.open .band-r{transform:perspective(700px) rotateY(92deg);opacity:0}
+.band-knot{
+  position:absolute;left:50%;top:50%;z-index:2;
+  width:clamp(34px,4vw,42px);height:clamp(34px,4vw,42px);
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#c9503f,#a52d24 62%,#7d1f19);
+  color:#f6efe0;font-family:var(--kai);font-size:16px;line-height:1;
+  display:grid;place-items:center;
+  box-shadow:0 0 0 3px #ddcda5,0 6px 14px -8px rgba(27,25,22,.8);
+  transition:transform .8s cubic-bezier(.4,.1,.3,1),opacity .6s var(--ease);
+}
+.scroll.open .band-knot{transform:translate(-50%,26px) rotate(22deg) scale(.55);opacity:0}
+
+/* 信纸本体：横排，从上往下逐行读 */
+.letter{
+  font-family:var(--fang);color:var(--ink);
+  line-height:2;font-size:clamp(15.5px,1.7vw,17.5px);
+  letter-spacing:.02em;text-indent:2em;
+  background-image:linear-gradient(to bottom,var(--line-2) 0 1px,transparent 1px);
+  background-size:100% 2em;
+  background-position:left 1.5em;
+  background-repeat:repeat-y;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);
+}
+.letter.shown{opacity:1;transform:none}
+.letter p{margin:0}
+.letter .p{display:inline}
+/* 段间空行必须是 line-height 的整数倍，界格横线才不会越走越歪 */
+.letter .gap{display:block;height:2em}
+.letter .gap.big{height:4em}
+.letter b{font-weight:400;color:var(--zhu)}
+.letter .sig{
+  display:block;text-align:right;text-indent:0;
+  font-family:var(--kai);letter-spacing:.16em;
+}
+.letter .sig b{font-family:var(--kai);color:var(--zhu)}
+
+/* ============================================================================
+   六 · 落款（盖章）
+   ============================================================================ */
+.sign-sec{padding-bottom:clamp(60px,8vw,110px)}
+.sign-in{
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;
+  gap:clamp(22px,3.6vw,52px);
+  border-top:1px solid var(--ink);
+  padding-top:clamp(30px,4.4vw,52px);
+}
+.sign-mid{height:1px;background:var(--line);min-width:20px}
+.sign-txt{min-width:0}
+.st-date{
+  margin:0;font-family:var(--en);font-size:clamp(13px,1.5vw,15px);
+  letter-spacing:.26em;color:var(--ink-3);
+}
+.st-big{
+  margin:clamp(14px,2vw,20px) 0 0;
+  font-family:var(--kai);font-weight:400;
+  font-size:clamp(24px,3.4vw,38px);letter-spacing:.2em;color:var(--ink);
+}
+.st-reveal{
+  margin:clamp(14px,2vw,20px) 0 0;
+  font-family:var(--kai);font-size:clamp(13.5px,1.6vw,16px);
+  letter-spacing:.14em;color:var(--zhu);
+  opacity:0;transform:translateY(8px);
+  transition:opacity .8s var(--ease),transform .8s var(--ease);
+}
+.st-reveal.on{opacity:1;transform:none}
+
+.seal-big{flex:0 0 auto;text-align:center}
+.seal-big .seal{--sz:112px;font-size:calc(112px * .27);transform:rotate(-2.4deg)}
+.seal-big .seal:hover{transform:rotate(-1deg) scale(1.04)}
+.seal-hint{
+  margin:clamp(14px,2vw,20px) 0 0;
+  font-family:var(--kai);font-size:12px;letter-spacing:.22em;color:var(--ink-3);
+}
+
+/* 盖章时的墨点 / 撕日历时飞出的纸屑 */
+.ink-dot{
+  position:fixed;z-index:9;pointer-events:none;border-radius:50%;
+  background:var(--zhu);
+}
+.paper-bit{
+  position:fixed;z-index:9;pointer-events:none;border-radius:1px;
+  background:#e9e0c9;
+  box-shadow:0 1px 2px -1px rgba(27,25,22,.45);
+}
+.paper-bit:nth-child(even){background:#f3ecdc}
+
+/* ============================================================================
+   页脚
+   ============================================================================ */
+footer{
+  position:relative;z-index:2;
+  border-top:1px solid var(--line);
+  padding:clamp(26px,3.6vw,42px) 0 clamp(34px,5vw,60px);
+}
+.foot-in{
+  display:flex;justify-content:space-between;align-items:baseline;
+  flex-wrap:wrap;gap:14px;
+  font-family:var(--kai);font-size:12px;letter-spacing:.24em;color:var(--ink-3);
+}
+.foot-in b{font-family:var(--en);font-weight:400;letter-spacing:.16em;color:var(--ink-2)}
+
+/* ============================================================================
+   响应式
+   ============================================================================ */
+@media (max-width:900px){
+  .cv-mid{gap:14px}
+  .cal{--num:clamp(70px,21vw,120px)}
+  .seal{--sz:66px;font-size:calc(66px * .27)}
+  .figs{grid-template-columns:repeat(2,1fr)}
+  .fig{padding:clamp(18px,4vw,26px) clamp(14px,3.4vw,24px) 0 0}
+  .fig + .fig{border-left:0;padding-left:0}
+  .fig:nth-child(even){border-left:1px solid var(--line);padding-left:clamp(16px,4vw,26px)}
+  .fig b{font-size:clamp(26px,5.4vw,40px)}
+  .fig b.date{font-size:clamp(16px,3.4vw,23px)}
+  .chron li{grid-template-columns:1fr;gap:6px}
+  .cy{padding-top:0}
+  .post{grid-template-columns:1fr;align-items:flex-start}
+  .post-body{border-left:0;padding-left:0;border-top:1px solid var(--line-2);padding-top:clamp(16px,3vw,22px);margin-top:6px}
+  .sign-in{grid-template-columns:1fr;justify-items:start;gap:clamp(24px,5vw,34px)}
+  .sign-mid{width:64px}
+  .seal-big{text-align:left}
+}
+@media (max-width:560px){
+  .figs{grid-template-columns:1fr}
+  .fig + .fig{border-top:1px solid var(--line-2)}
+  .fig:nth-child(even){border-left:0;padding-left:0}
+}
+@media (max-width:430px){
+  .cv-title{font-size:clamp(26px,8.4vw,38px);letter-spacing:.2em}
+  .cv-cap{letter-spacing:.3em}
+  .letter{font-size:15px}
+  .sh{gap:12px}
+  .cd-num{font-size:52px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.001s!important}
+  [data-rv]{opacity:1;transform:none}
+  .sh-rule,.fig::before,.chron li::after,.wish li::before{transform:none!important}
+  /* 日历：撕掉的那页直接不画，日期本来就露着 */
+  .cal-tear{display:none!important}
+  .cal-hint{opacity:.58!important}
+  /* 信卷：直接展开 */
+  .scroll-body{height:auto!important;transition:none!important}
+  .scroll-body::after,.band,.scroll-hint{display:none!important}
+  .letter{opacity:1!important;transform:none!important}
+}
+@media print{
+  body::before,.grain,.spine,.seal,.cv-scroll,
+  .cal-tear,.cal-rings,.band,.rod,.scroll-hint{display:none!important}
+  .scroll-body{height:auto!important;overflow:visible!important}
+  .scroll-body::after{display:none!important}
+  .letter{opacity:1!important;transform:none!important}
+  .sec{padding:24px 0}
+}
+</style>
+<noscript>
+<style>
+  /* 没有脚本也要能读：日历那页不画，信卷直接摊开 */
+  [data-rv]{opacity:1!important;transform:none!important}
+  .cal-tear,.cal-rings,.band,.scroll-hint,.spine{display:none!important}
+  .scroll-body{height:auto!important;overflow:visible!important}
+  .scroll-body::after{display:none!important}
+  .letter{opacity:1!important;transform:none!important}
+</style>
+</noscript>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="spine" id="spine" aria-hidden="true"></div>
+
+<main>
+
+  <!-- ============================================================
+       天头
+       ============================================================ -->
+  <header class="cover" id="top">
+    <div class="wrap">
+      <div class="cv-top">
+        <span class="cv-mark">二〇二六年 · 秋</span>
+        <span class="cv-mark">No.<b>1024</b></span>
+      </div>
+
+      <div class="cv-mid">
+        <div class="cv-date">
+          <div class="cal" id="cal" title="点一下，再撕一页">
+            <span class="cal-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="cal-perf" aria-hidden="true"></span>
+            <div class="cal-body">
+              <p class="cv-num" role="img" aria-label="十月二十四日">
+                <span class="n-m">10</span><span class="n-s">·</span><span class="n-d">24</span>
+              </p>
+              <div class="cal-tear" id="calTear" aria-hidden="true">
+                <p class="ct-num"><span>10</span><i>·</i><span>23</span></p>
+                <span class="ct-wk">星期五</span>
+              </div>
+            </div>
+          </div>
+          <p class="cv-cap">十月廿四 · 生日</p>
+          <p class="cal-hint">点一下 · 再撕一页</p>
+        </div>
+
+        <div class="cv-title-col">
+          <h1 class="cv-title"><span>生</span><span>日</span><span>帖</span></h1>
+          <button class="seal" id="sealA" type="button" aria-label="盖一枚印章">
+            <span>生</span><span>日</span><span>快</span><span>乐</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="cv-bot">
+        <span class="cv-line"></span>
+        <p class="cv-sub">致今天过生日的人</p>
+        <p class="cv-sub dim">往下翻，有一封信</p>
+        <span class="cv-scroll">SCROLL</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       一 · 今日
+       ============================================================ -->
+  <section class="sec" id="post">
+    <div class="wrap">
+      <div class="sh" data-rv>
+        <span class="sh-no">壹</span>
+        <h2 class="sh-t">今日</h2>
+        <span class="sh-rule"></span>
+      </div>
+
+      <div class="post" data-rv>
+        <div class="post-cd">
+          <b class="cd-num" id="cdNum">—</b>
+          <span class="cd-stack">
+            <span class="cd-lbl" id="cdLbl">天后</span>
+            <span class="cd-clock" id="cdClock"><i id="cdH">00</i><em>:</em><i id="cdM">00</i><em>:</em><i id="cdS">00</i></span>
+          </span>
+        </div>
+        <div class="post-body">
+          <p class="post-l1"><em>2026 · 10 · 24</em>　星期六</p>
+          <p class="post-l2">那天你会在山路上，跑 <b>26.01</b> 公里，爬 <b>1794</b> 米。</p>
+          <p class="post-l3">先跑完，再回家切蛋糕。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       二 · 几笔数
+       ============================================================ -->
+  <section class="sec" id="figs">
+    <div class="wrap">
+      <div class="sh" data-rv>
+        <span class="sh-no">貳</span>
+        <h2 class="sh-t">几笔数</h2>
+        <span class="sh-rule"></span>
+      </div>
+
+      <div class="figs">
+        <figure class="fig" data-rv>
+          <b id="daysNum">—</b>
+          <figcaption>一起走过的日子 · 天</figcaption>
+        </figure>
+        <figure class="fig" data-rv>
+          <b id="bornDays">—</b>
+          <figcaption>来到这个世界 · 天</figcaption>
+        </figure>
+        <figure class="fig" data-rv>
+          <b class="date">2025.01.18</b>
+          <figcaption>我们的起点</figcaption>
+        </figure>
+        <figure class="fig" data-rv>
+          <b class="date">1995.10.24</b>
+          <figcaption>你的生日 · 生于 1995</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       三 · 几件事
+       ============================================================ -->
+  <section class="sec" id="chron">
+    <div class="wrap">
+      <div class="sh" data-rv>
+        <span class="sh-no">參</span>
+        <h2 class="sh-t">几件事</h2>
+        <span class="sh-rule"></span>
+      </div>
+
+      <ol class="chron">
+        <li data-rv>
+          <span class="cy">二〇二五 · 一月十八</span>
+          <div>
+            <h3>在一起</h3>
+            <p>从这天起，日子不再是一个人的。</p>
+          </div>
+        </li>
+        <li data-rv>
+          <span class="cy">二〇二五 · 一整年</span>
+          <div>
+            <h3>山、跑道、健身房</h3>
+            <p>隔几个月找座山爬爬，周末去跑几公里。后来这些都成了两个人的事。</p>
+          </div>
+        </li>
+        <li data-rv>
+          <span class="cy">二〇二六 · 五月</span>
+          <div>
+            <h3>你换了工作</h3>
+            <p>忙起来的那些晚上，你回消息、改东西，还会留一点时间给我。</p>
+          </div>
+        </li>
+        <li data-rv>
+          <span class="cy">二〇二六 · 十月廿四</span>
+          <div>
+            <h3>你的生日</h3>
+            <p>也是我们第一场越野赛的起点。</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       四 · 想一起做的事（还没做的那些）
+       ============================================================ -->
+  <section class="sec" id="wish">
+    <div class="wrap">
+      <div class="sh" data-rv>
+        <span class="sh-no">肆</span>
+        <h2 class="sh-t">想一起做的事</h2>
+        <span class="sh-rule"></span>
+      </div>
+
+      <p class="wish-lead" data-rv>以后的日子还长，先把这几件写下来，一件一件去做。</p>
+
+      <ul class="wish">
+        <li data-rv>
+          <span class="wck" aria-hidden="true"></span>
+          <div>
+            <h3>去欧洲玩几天<span class="wish-tag">已实现</span></h3>
+            <p>挑一个不用赶路的国家住下来。早上买面包，下午随便走，走累了就在路边坐着发呆。</p>
+          </div>
+        </li>
+        <li data-rv>
+          <span class="wck" aria-hidden="true"></span>
+          <div>
+            <h3>好好再看几场电影<span class="wish-tag">已实现</span></h3>
+            <p>不在手机上看。去电影院，买一大桶爆米花，散场了走回家，从剧情一路聊到楼下。</p>
+          </div>
+        </li>
+        <li data-rv>
+          <span class="wck" aria-hidden="true"></span>
+          <div>
+            <h3>看极光<span class="wish-tag">已实现</span></h3>
+            <p>挑最冷的几天出发，穿到最厚，等到半夜。听说真正看过的人，会一直记得那一眼。</p>
+          </div>
+        </li>
+        <li data-rv>
+          <span class="wck" aria-hidden="true"></span>
+          <div>
+            <h3>提高摄影技术<span class="wish-tag">已实现</span></h3>
+            <p>把相机带上路，把我拍好看一点，也把山、把云、把跑起来的你自己留下来。</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       五 · 信（原文照录，只换成横排 ＋ 卷轴展开）
+       ============================================================ -->
+  <section class="sec" id="letter">
+    <div class="wrap">
+      <div class="sh" data-rv>
+        <span class="sh-no">伍</span>
+        <h2 class="sh-t">信</h2>
+        <span class="sh-rule"></span>
+      </div>
+
+      <div class="scroll-zone" data-rv>
+        <p class="scroll-hint" id="scrollHint"><em>点开封条 · 展信</em></p>
+
+        <div class="scroll" id="scroll" title="点一下，展开信卷">
+          <div class="rod rod-t" aria-hidden="true"><i></i><i></i></div>
+
+          <div class="scroll-body" id="scrollBody">
+            <div class="scroll-paper">
+              <div class="letter" id="letterBody">
+          <span class="p">生日快乐。</span><i class="gap"></i><span class="p">从 2025 年 1 月 18 日到今天，我们已经一起走了 <span id="letterDays">629</span> 天。这些日子里，我们爬了好几座山，健身房的卡没有被浪费，跑鞋也磨掉了一层底。</span><i class="gap"></i><span class="p">你今年特别忙。五月换工作之后，很多个晚上你都在回消息、改东西。我知道你想早点把项目做完，也知道你说“没事”的时候其实有点累。所以新的一岁，希望你能身体健康，事业高升，天天开心。</span><i class="gap"></i><span class="p">至于今天——10 月 24 号，<b>是你的生日</b>。这一天我们也会站上越野赛起跑线，但你先是你，再是我的跑友，这一天永远先是你的。切不切蛋糕不重要，重要的是有人记得、有人陪。</span><i class="gap"></i><span class="p">所以我不祝你跑得快。 我祝你不抽筋、不走错路、不中暑，祝你在每一个上坡都还能抬头看看天，祝你在终点线看到我的时候，还有力气笑出来。</span><i class="gap"></i><span class="p">新的一岁，愿你有山可爬，有路可跑，有人可等。回头看看，我一直在。</span><i class="gap big"></i><span class="sig">爱你的 <b id="signOut">你的女朋友</b></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rod rod-b" aria-hidden="true"><i></i><i></i></div>
+
+          <button class="band" id="scrollBand" type="button" aria-expanded="false" aria-controls="scrollBody" aria-label="拆开封条，展开信卷">
+            <span class="band-half band-l"></span>
+            <span class="band-half band-r"></span>
+            <span class="band-knot">启</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       六 · 落款
+       ============================================================ -->
+  <section class="sec sign-sec" id="sign">
+    <div class="wrap">
+      <div class="sign-in" data-rv>
+        <div class="sign-txt">
+          <p class="st-date">2026 · 10 · 24</p>
+          <p class="st-big">生日快乐</p>
+          <p class="st-reveal" id="stReveal">章已盖上 —— 这一岁，我陪你走。</p>
+        </div>
+        <span class="sign-mid" aria-hidden="true"></span>
+        <div class="seal-big">
+          <button class="seal" id="sealB" type="button" aria-label="再盖一枚印章">
+            <span>岁</span><span>岁</span><span>平</span><span>安</span>
+          </button>
+          <p class="seal-hint" id="sealHint">点一下盖章</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <span>生日帖 · 一纸</span>
+    <span><b>10 · 24</b></span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================================
+   生日帖 · 脚本
+   一 · 撕日历      二 · 秒级倒计时    三 · 几笔数（含出生天数）
+   四 · 展卷（卷轴） 五 · 盖章         六 · 入场
+   ============================================================================ */
+(function () {
+  'use strict';
+
+  /* --------------------------------------------------- 参数（可留空） */
+  var q = new URLSearchParams(location.search);
+  var FROM = q.get('from');                       // ?from=小美 改署名
+  var TO   = q.get('to');                         // ?to=小明   改称呼
+  try {
+    if (FROM) localStorage.setItem('bt_from', FROM);
+    if (TO)   localStorage.setItem('bt_to', TO);
+    FROM = FROM || localStorage.getItem('bt_from');
+    TO   = TO   || localStorage.getItem('bt_to');
+  } catch (e) { /* 隐私模式下忽略 */ }
+  if (!FROM) FROM = '\u4f60\u7684\u5973\u670b\u53cb';   // 你的女朋友
+
+  var STAMP_LINE = TO ? (TO + '，生日快乐。') : null;
+
+  /* --------------------------------------------------- 时间 */
+  var DAY_MS = 86400000;
+  var START  = new Date(2025, 0, 18);   // 2025-01-18 在一起
+  var BIRTH  = new Date(1995, 9, 24);   // 1995-10-24 出生
+  var TARGET = new Date(2026, 9, 24);   // 2026-10-24 生日（倒计时终点）
+  var today  = new Date(); today.setHours(0, 0, 0, 0);
+
+  function diffDays(a, b) { return Math.round((b - a) / DAY_MS); }
+
+  var passed   = Math.max(0, diffDays(START, today));   // 一起走过多少天
+  var bornDays = Math.max(0, diffDays(BIRTH, today));   // 来到这个世界多少天
+
+  var elDays = document.getElementById('daysNum');
+  if (elDays) elDays.textContent = String(passed);
+
+  var elBorn = document.getElementById('bornDays');
+  if (elBorn) elBorn.textContent = String(bornDays);
+
+  /* 信里那句「我们已经一起走了 N 天」同步（原文里是写死的旧数字） */
+  var elLD = document.getElementById('letterDays');
+  if (elLD) elLD.textContent = String(passed);
+
+  /* --------------------------------------------------- 今日 · 倒计时（秒级，目标 2026-10-24） */
+  var cdD     = document.getElementById('cdNum');
+  var cdLbl   = document.getElementById('cdLbl');
+  var cdClock = document.getElementById('cdClock');
+  var cdH     = document.getElementById('cdH');
+  var cdM     = document.getElementById('cdM');
+  var cdS     = document.getElementById('cdS');
+
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+  function tickCountdown() {
+    var ms = TARGET.getTime() - Date.now();
+    if (ms >= 0) {
+      var s = Math.floor(ms / 1000);
+      var d = Math.floor(s / 86400); s -= d * 86400;
+      var h = Math.floor(s / 3600);  s -= h * 3600;
+      var m = Math.floor(s / 60);    s -= m * 60;
+      if (cdD) cdD.textContent = String(d);
+      if (cdLbl) cdLbl.textContent = '天后';
+      if (cdClock) cdClock.hidden = false;
+      if (cdH) cdH.textContent = pad2(h);
+      if (cdM) cdM.textContent = pad2(m);
+      if (cdS) cdS.textContent = pad2(s);
+    } else {
+      var past = Math.floor(-ms / DAY_MS);
+      if (cdD) cdD.textContent = past === 0 ? '今' : String(past);
+      if (cdLbl) cdLbl.textContent = past === 0 ? '就是今天' : '天前';
+      if (cdClock) cdClock.hidden = true;
+    }
+  }
+  tickCountdown();
+  window.setInterval(tickCountdown, 1000);
+
+  /* --------------------------------------------------- 入场 */
+  var items = document.querySelectorAll('[data-rv]');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (list) {
+      list.forEach(function (en, i) {
+        if (!en.isIntersecting) return;
+        en.target.style.transitionDelay = (i % 4) * 90 + 'ms';
+        en.target.classList.add('in');
+        io.unobserve(en.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: .12 });
+    Array.prototype.forEach.call(items, function (n) { io.observe(n); });
+  } else {
+    Array.prototype.forEach.call(items, function (n) { n.classList.add('in'); });
+  }
+
+  /* --------------------------------------------------- 一 · 撕日历
+     撕页动画本身写在 CSS 里（首屏自动播一遍）；
+     这里只负责撒纸屑，以及「点一下再撕一页」。                        */
+  var calEl  = document.getElementById('cal');
+  var tearEl = document.getElementById('calTear');
+
+  function paperLash(x, y, w) {
+    var N = 14;
+    for (var i = 0; i < N; i++) {
+      var d = document.createElement('span');
+      d.className = 'paper-bit';
+      d.style.width  = (3 + Math.random() * 8) + 'px';
+      d.style.height = (3 + Math.random() * 6) + 'px';
+      d.style.left   = (x + Math.random() * w) + 'px';
+      d.style.top    = y + 'px';
+      d.style.opacity = String(.45 + Math.random() * .5);
+      document.body.appendChild(d);
+      var dx = (Math.random() - .5) * 170;
+      var dy = 30 + Math.random() * 180;
+      var rz = (Math.random() - .5) * 640;
+      var anim = d.animate([
+        { transform: 'translate(-50%,-50%) rotate(0deg)' },
+        { transform: 'translate(-50%,-50%) translate(' + dx + 'px,' + dy + 'px) rotate(' + rz + 'deg)', opacity: 0 }
+      ], { duration: 1100 + Math.random() * 900, easing: 'cubic-bezier(.3,.5,.4,1)' });
+      anim.onfinish = function (n) { return function () { n.remove(); }; }(d);
+    }
+  }
+
+  function lashAtPerf(delay) {
+    if (!tearEl) return;
+    window.setTimeout(function () {
+      var r = tearEl.getBoundingClientRect();
+      if (!r || !r.width) return;
+      paperLash(r.left, r.top + r.height - 1, r.width);
+    }, delay);
+  }
+
+  function replayTear() {
+    if (!calEl) return;
+    calEl.classList.remove('replay');
+    void calEl.offsetWidth;               /* 强制重排，动画才会重放 */
+    calEl.classList.add('replay');
+    lashAtPerf(120);
+  }
+
+  if (calEl) {
+    lashAtPerf(790);                      /* 首屏：CSS 在 .75s 起撕 */
+    calEl.addEventListener('click', replayTear);
+    calEl.tabIndex = 0;
+    calEl.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); replayTear(); }
+    });
+  }
+
+  /* --------------------------------------------------- 四 · 展卷（卷轴）
+     卷起来时只有 --roll 那么高；点击后把高度撑到内容真实高度，
+     卷身自上而下展开，下轴跟着往下走。                                 */
+  var scrollEl   = document.getElementById('scroll');
+  var scrollBody = document.getElementById('scrollBody');
+  var bandEl     = document.getElementById('scrollBand');
+  var hintEl     = document.getElementById('scrollHint');
+  var letterEl   = document.getElementById('letterBody');
+  var opened     = false;
+
+  function openScroll() {
+    if (!scrollEl || opened) return;
+    opened = true;
+    scrollEl.classList.add('open');
+    if (bandEl) bandEl.setAttribute('aria-expanded', 'true');
+    if (hintEl) hintEl.classList.add('off');
+    var h = scrollBody ? scrollBody.scrollHeight : 0;
+    window.setTimeout(function () {
+      if (scrollBody) scrollBody.style.height = h + 'px';
+    }, 340);
+    window.setTimeout(function () {
+      if (letterEl) letterEl.classList.add('shown');
+    }, 340 + 980);
+  }
+
+  if (scrollEl) {
+    scrollEl.addEventListener('click', function (ev) {
+      if (opened) return;
+      ev.preventDefault();
+      openScroll();
+    });
+  }
+
+  /* 展开后窗口变化：直接量一次真实高度贴回去，避免动画错位 */
+  function reflowScroll() {
+    if (!opened || !scrollBody) return;
+    scrollBody.style.transition = 'none';
+    scrollBody.style.height = 'auto';
+    var h = scrollBody.offsetHeight;
+    scrollBody.style.height = h + 'px';
+    void scrollBody.offsetWidth;
+    scrollBody.style.transition = '';
+  }
+
+  /* --------------------------------------------------- 想一起做的事：可以勾掉 */
+  Array.prototype.forEach.call(document.querySelectorAll('.wish li'), function (li) {
+    li.setAttribute('role', 'checkbox');
+    li.setAttribute('aria-checked', 'false');
+    li.tabIndex = 0;
+    function toggle() {
+      var on = li.classList.toggle('done');
+      li.setAttribute('aria-checked', on ? 'true' : 'false');
+    }
+    li.addEventListener('click', toggle);
+    li.addEventListener('keydown', function (ev) {
+      if (ev.key === ' ' || ev.key === 'Enter') { ev.preventDefault(); toggle(); }
+    });
+  });
+
+  /* --------------------------------------------------- 署名与动态文案 */
+  var outs = document.querySelectorAll('[id="signOut"], .js-from');
+  Array.prototype.forEach.call(outs, function (n) { n.textContent = FROM; });
+
+  /* --------------------------------------------------- 右侧卷轴进度 */
+  var spine = document.getElementById('spine');
+  function onScroll() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+    if (spine) spine.style.setProperty('--p', (p * 100).toFixed(2) + '%');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* --------------------------------------------------- 盖章 */
+  var ctxAudio = null;
+  function thud() {
+    if (ctxAudio === null) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      ctxAudio = AC ? new AC() : false;
+    }
+    if (!ctxAudio) return;
+    var ctx = ctxAudio, t = ctx.currentTime;
+
+    /* 一记闷响：噪声瞬态 → 低通 */
+    var n = ctx.sampleRate * 0.18 | 0;
+    var buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3.2);
+    var src = ctx.createBufferSource(); src.buffer = buf;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 780; lp.Q.value = .6;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.42, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+    src.connect(lp); lp.connect(g); g.connect(ctx.destination); src.start(t);
+
+    /* 低频体声：印面压实纸面的那一下 */
+    var o = ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(196, t);
+    o.frequency.exponentialRampToValueAtTime(72, t + 0.15);
+    var g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.exponentialRampToValueAtTime(0.24, t + 0.006);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+    o.connect(g2); g2.connect(ctx.destination);
+    o.start(t); o.stop(t + 0.26);
+  }
+
+  function inkBurst(x, y) {
+    var N = 16;
+    for (var i = 0; i < N; i++) {
+      var d = document.createElement('span');
+      d.className = 'ink-dot';
+      var s = 2 + Math.random() * 5;
+      d.style.width = s + 'px'; d.style.height = s + 'px';
+      d.style.left = x + 'px';  d.style.top = y + 'px';
+      d.style.opacity = String(.34 + Math.random() * .42);
+      document.body.appendChild(d);
+      var a = (Math.PI * 2 * i) / N + Math.random() * .5;
+      var r = 34 + Math.random() * 74;
+      var anim = d.animate([
+        { transform: 'translate(-50%,-50%) scale(.5)', opacity: d.style.opacity },
+        { transform: 'translate(-50%,-50%) translate(' + (Math.cos(a) * r) + 'px,' + (Math.sin(a) * r) + 'px) scale(0)', opacity: 0 }
+      ], { duration: 520 + Math.random() * 420, easing: 'cubic-bezier(.16,.7,.2,1)' });
+      anim.onfinish = function (n) { return function () { n.remove(); }; }(d);
+    }
+  }
+
+  var stamped = false;
+  function stamp(btn) {
+    if (!btn) return;
+    btn.classList.remove('stamping');
+    void btn.offsetWidth;
+    btn.classList.add('stamping');
+
+    var r = btn.getBoundingClientRect();
+    inkBurst(r.left + r.width / 2, r.top + r.height / 2);
+
+    try { thud(); } catch (e) {}
+
+    if (!stamped) {
+      stamped = true;
+      var hint = document.getElementById('sealHint');
+      if (hint) hint.textContent = '已盖章';
+      var rev = document.getElementById('stReveal');
+      if (rev) {
+        if (STAMP_LINE) rev.textContent = STAMP_LINE;
+        setTimeout(function () { rev.classList.add('on'); }, 240);
+      }
+      var cap = document.querySelector('.cv-cap');
+      if (cap) cap.style.color = 'var(--zhu)';
+    }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.seal'), function (btn) {
+    btn.addEventListener('click', function () { stamp(btn); });
+  });
+
+  /* --------------------------------------------------- 启动 */
+  var mqReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (mqReduce && mqReduce.matches) openScroll();   /* 不要动画就直接展开 */
+
+  function boot() {
+    tickCountdown();
+    onScroll();
+  }
+  if (document.readyState === 'complete') boot();
+  else window.addEventListener('load', boot);
+
+  var rt = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(reflowScroll, 150);
+  });
+
+  /* 字体延迟到位后重排一次（信卷的真实高度会变） */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { reflowScroll(); });
+  }
+
+  window.__post = {
+    passed: passed,
+    bornDays: bornDays,
+    leftDays: diffTillTarget(),
+    from: FROM,
+    openScroll: openScroll,
+    replayTear: replayTear
+  };
+
+  function diffTillTarget() { return diffDays(today, TARGET); }
+})();
+</script>
+</body>
+</html>
