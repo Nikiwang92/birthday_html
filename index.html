@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#eee7d8">
+<meta name="theme-color" content="#f3f1ec">
 <title>十月廿四 · 生日帖</title>
 <style>
 /* ============================================================================
@@ -15,23 +15,55 @@
 *,*::before,*::after{box-sizing:border-box}
 
 :root{
-  /* 纸 */
-  --paper:#eee7d8;
-  --paper-2:#e7dfcd;
-  --paper-3:#ded3ba;
-  /* 墨 */
-  --ink:#1b1916;
-  --ink-2:#4b463d;
-  --ink-3:#8b8375;
-  /* 线 */
-  --line:rgba(27,25,22,.17);
-  --line-2:rgba(27,25,22,.08);
-  /* 朱砂 */
-  --zhu:#b0342a;
-  --zhu-2:#8c2721;
-  --zhu-soft:rgba(176,52,42,.14);
-  /* 石青（极少用） */
-  --qing:#3f5f5e;
+  /* ---- 纸：三档同色相宣纸 -------------------------------------------------
+     底(--paper) / 下陷(--paper-2,--paper-3) / 抬起(--card,--card-2)。
+     2026-10-13 二次重做：底色红蓝差一路 22 → 10 → 7，几乎中性，只留一丝暖；
+     关键是「抬起面比底更白」，卡片才浮得起来（旧版抬起的卡片反而比底更黄）。 */
+  --paper:#f3f1ec;
+  --paper-2:#eae7e0;
+  --paper-3:#e0ddd5;
+  --card:#fbfaf7;
+  --card-2:#f6f4ee;
+
+  /* ---- 墨：四档，逐级可读（括号内为落在底上的 WCAG 对比度）------------- */
+  --ink:#191714;                /* 15.85 : 1 正文 */
+  --ink-2:#3a3731;              /* 10.51 : 1 次文 */
+  --ink-3:#67625a;              /*  5.36 : 1 注释 */
+  --ink-4:#8b8579;              /*  3.25 : 1 只给大字与装饰，不用在小字上 */
+
+  /* ---- 线 ---- */
+  --line:rgba(25,23,20,.22);
+  --line-2:rgba(25,23,20,.10);
+
+  /* ---- 朱砂：主色。只点状使用，面积一大整页就被拉回暖调 ---------------- */
+  --zhu:#a32b22;                /*  6.36 : 1 */
+  --zhu-2:#7d1f18;
+  --zhu-soft:rgba(163,43,34,.14);
+  --zhu-wash:rgba(163,43,34,.05);
+
+  /* ---- 石青：次色。给「小秘密」一区，把整页唯一的暖色系打断一下 -------- */
+  --qing:#34595b;               /*  6.82 : 1 */
+  --qing-2:#234142;
+  --qing-soft:rgba(52,89,91,.14);
+  --qing-wash:rgba(52,89,91,.05);
+
+  /* ---- 赭金：仅作点缀（细线、小点），不当文字色用（3.5:1 只够大字）---- */
+  --gold:#9a7b3f;
+  --gold-soft:rgba(154,123,63,.16);
+
+  /* ---- 墨块：全页唯一的暗锚点（落款＋页脚）。纸白字，朱砂只做印 --------- */
+  --deep:#1a1815;
+  --deep-2:#221f1a;
+  --on-deep:#e8e4db;            /* 13.96 : 1 */
+  --on-deep-2:#a9a396;          /*  7.06 : 1 */
+  --on-deep-3:#8b8578;          /*  4.83 : 1 */
+  --deep-line:rgba(232,228,219,.20);
+
+  /* ---- 抬起：三层投影，越靠前越沉 ---- */
+  --sh-1:0 1px 2px -1px rgba(25,23,20,.10),0 6px 16px -12px rgba(25,23,20,.22);
+  --sh-2:0 2px 4px -2px rgba(25,23,20,.12),0 18px 40px -24px rgba(25,23,20,.30);
+  --sh-3:0 4px 8px -4px rgba(25,23,20,.14),0 30px 60px -34px rgba(25,23,20,.36);
+  --edge:1px solid rgba(25,23,20,.13);
 
   /* 字体：全部系统自带。正文用仿宋（中式信笺），标题用楷体 */
   --serif:"Songti SC","Noto Serif SC","Source Han Serif SC",STSong,SimSun,serif;
@@ -60,9 +92,9 @@ body{
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(34vw 26vw at 84% 4%,rgba(176,52,42,.035),transparent 70%),
-    radial-gradient(40vw 30vw at 8% 34%,rgba(63,95,94,.03),transparent 72%),
-    radial-gradient(44vw 34vw at 74% 92%,rgba(27,25,22,.032),transparent 74%);
+    radial-gradient(34vw 26vw at 84% 4%,rgba(163,43,34,.035),transparent 70%),
+    radial-gradient(40vw 30vw at 8% 34%,rgba(52,89,91,.03),transparent 72%),
+    radial-gradient(44vw 34vw at 74% 92%,rgba(25,23,20,.032),transparent 74%);
 }
 
 /* 纸纤维颗粒（内联 SVG，无外部请求） */
@@ -75,17 +107,20 @@ body::before{
 /* 右侧竖读书签（卷轴进度） */
 .spine{
   position:fixed;top:0;right:0;width:2px;height:100%;z-index:5;
-  background:linear-gradient(180deg,var(--zhu) 0 var(--p,0%),rgba(27,25,22,.07) 0);
+  background:linear-gradient(180deg,var(--zhu) 0 var(--p,0%),rgba(25,23,20,.07) 0);
 }
 
 .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(22px,4.4vw,54px)}
 main{position:relative;z-index:2}
-.sec{padding:clamp(76px,11vw,150px) 0;position:relative}
+/* 段落节奏（2026-10-13 收紧）：原来上下各 76–150px，两段相接就空出 150–300px，
+   读起来一截一截断开。现在上宽下窄 —— 标题上方留白略大（标题归属下面那段），
+   正文末尾到下一个标题之间收窄，段落之间才连得上。 */
+.sec{padding:clamp(54px,7vw,100px) 0 clamp(38px,4.8vw,68px);position:relative}
 
 /* ---------------------------------------------------------------- 通用小件 */
 .sh{
   display:flex;align-items:baseline;gap:clamp(12px,1.6vw,20px);
-  margin-bottom:clamp(34px,5vw,62px);
+  margin-bottom:clamp(28px,3.9vw,48px);
 }
 .sh-no{
   flex:0 0 auto;
@@ -153,14 +188,14 @@ main{position:relative;z-index:2}
 }
 .cal-rings i{
   width:10px;height:calc(var(--rod) + 4px);border-radius:50%;
-  border:1.6px solid rgba(27,25,22,.34);border-top-color:transparent;
-  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(27,25,22,.05));
-  box-shadow:inset 0 -4px 4px -2px rgba(27,25,22,.16);
+  border:1.6px solid rgba(25,23,20,.34);border-top-color:transparent;
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(25,23,20,.05));
+  box-shadow:inset 0 -4px 4px -2px rgba(25,23,20,.16);
   transform:translateY(-3px);
 }
 .cal-perf{
   display:block;height:0;margin:5px 0 4px;
-  border-top:1.5px dashed rgba(27,25,22,.3);
+  border-top:1.5px dashed rgba(25,23,20,.3);
 }
 .cal-body{position:relative}
 
@@ -184,31 +219,31 @@ main{position:relative;z-index:2}
 .cal-tear{
   position:absolute;inset:0;z-index:2;
   display:flex;align-items:center;padding-left:.02em;
-  background:linear-gradient(180deg,#f5efe2,#e8dfcb 62%,#e0d5bd);
-  box-shadow:0 1px 0 rgba(255,255,255,.75) inset,0 18px 26px -20px rgba(27,25,22,.75);
+  background:linear-gradient(180deg,#f7f5f0,#ebe7de 62%,#e2ded5);
+  box-shadow:0 1px 0 rgba(255,255,255,.75) inset,0 18px 26px -20px rgba(25,23,20,.75);
   transform-origin:50% 0;will-change:transform,opacity;pointer-events:none;
   animation:calTear 1.9s cubic-bezier(.44,.03,.58,1) .75s both;
 }
 .cal-tear::before{                  /* 撕口：锯齿轮廓 */
   content:'';position:absolute;left:0;right:0;top:-5px;height:6px;
   background-image:
-    linear-gradient(135deg,transparent 50%,#e8dfcb 50%),
-    linear-gradient(-135deg,transparent 50%,#e8dfcb 50%);
+    linear-gradient(135deg,transparent 50%,#ebe7de 50%),
+    linear-gradient(-135deg,transparent 50%,#ebe7de 50%);
   background-size:9px 6px;background-position:0 0,4.5px 0;background-repeat:repeat-x;
 }
 .cal-tear .ct-num{
   margin:0;display:flex;align-items:baseline;
   font-family:var(--en);font-size:var(--num);line-height:.84;letter-spacing:-.02em;
-  color:rgba(27,25,22,.40);
+  color:rgba(25,23,20,.40);
 }
 .cal-tear .ct-num i{
-  font-style:normal;font-size:.5em;color:rgba(27,25,22,.26);
+  font-style:normal;font-size:.5em;color:rgba(25,23,20,.26);
   margin:0 .1em;transform:translateY(-.12em);
 }
 .cal-tear .ct-wk{
   position:absolute;right:.04em;bottom:.06em;
   font-family:var(--kai);font-size:clamp(11px,1.15vw,13px);
-  letter-spacing:.3em;color:rgba(27,25,22,.32);
+  letter-spacing:.3em;color:rgba(25,23,20,.32);
 }
 @keyframes calTear{
   0%{transform:none;opacity:1}
@@ -272,9 +307,9 @@ main{position:relative;z-index:2}
   font-family:var(--kai);font-size:calc(var(--sz)*.27);
   letter-spacing:0;line-height:1;
   box-shadow:
-    0 0 0 1px rgba(140,39,33,.55),
+    0 0 0 1px rgba(125,31,24,.55),
     0 1px 0 rgba(255,255,255,.1) inset,
-    0 8px 22px -12px rgba(140,39,33,.55);
+    0 8px 22px -12px rgba(125,31,24,.55);
   transform:rotate(-3.6deg);
   transition:transform .38s var(--ease),box-shadow .38s var(--ease);
   -webkit-tap-highlight-color:transparent;
@@ -319,26 +354,17 @@ main{position:relative;z-index:2}
   border-top:1px solid var(--ink);border-bottom:1px solid var(--line);
   padding:clamp(26px,4vw,44px) 0;
 }
-/* 倒计时只露「最大的那个有意义单位」：N 天后 / N 小时后 / N 分钟后 —— 不显示秒 */
-.post-cd{display:flex;align-items:baseline;gap:clamp(10px,1.4vw,16px);flex-wrap:wrap}
+/* 「今日」是生日当天打开时看到的状态，不做倒计时 —— 只标出「就是今天」 */
+.post-cd{display:flex;align-items:baseline;gap:clamp(12px,1.8vw,22px);flex-wrap:wrap}
 .cd-num{
-  font-family:var(--en);font-weight:400;font-variant-numeric:tabular-nums;
-  font-feature-settings:"lnum" 1,"tnum" 1;
+  font-family:var(--kai);font-weight:400;
   font-size:clamp(58px,9.4vw,112px);line-height:.84;color:var(--zhu);
-  display:inline-block;transform-origin:left bottom;
-}
-.cd-num.bump{animation:cdBump .62s var(--ease)}
-@keyframes cdBump{
-  0%{opacity:.28;transform:translateY(-.07em) scale(.97)}
-  60%{opacity:1}
-  100%{opacity:1;transform:none}
+  display:inline-block;
 }
 .cd-lbl{
   font-family:var(--kai);font-size:clamp(14px,1.7vw,19px);
   letter-spacing:.2em;color:var(--ink-2);
-  transition:color .5s var(--ease),letter-spacing .5s var(--ease);
 }
-.cd-lbl.soft{color:var(--ink-3);letter-spacing:.24em}
 .post-body{border-left:1px solid var(--line);padding-left:clamp(22px,4vw,58px)}
 .post-l1{
   margin:0;font-family:var(--en);font-size:clamp(13px,1.5vw,15px);
@@ -431,16 +457,16 @@ main{position:relative;z-index:2}
   transition:transform .9s var(--ease);
 }
 .wish li.in::before{transform:scaleX(1)}
-.wish li:hover{background:rgba(176,52,42,.022)}
+.wish li:hover{background:rgba(163,43,34,.022)}
 .wish li:focus-visible{outline:2px solid var(--zhu-soft);outline-offset:2px}
 
 .wck{
   width:23px;height:23px;flex:0 0 auto;margin-top:.42em;position:relative;
-  border:1px solid rgba(176,52,42,.5);border-radius:3px;
-  background:linear-gradient(180deg,rgba(176,52,42,.05),rgba(176,52,42,0));
+  border:1px solid rgba(163,43,34,.5);border-radius:3px;
+  background:linear-gradient(180deg,rgba(163,43,34,.05),rgba(163,43,34,0));
   transition:background-color .4s var(--ease);
 }
-.wish li.done .wck{background:rgba(176,52,42,.09)}
+.wish li.done .wck{background:rgba(163,43,34,.09)}
 .wck::after{                      /* 一勾 */
   content:'';position:absolute;left:50%;top:47%;
   width:12px;height:6px;
@@ -461,7 +487,7 @@ main{position:relative;z-index:2}
   margin:.55em 0 0;font-size:clamp(14px,1.55vw,15.5px);
   color:var(--ink-2);max-width:46ch;transition:color .4s var(--ease);
 }
-.wish li.done p{color:var(--ink-3)}
+.wish li.done p{color:var(--ink-2)}
 .wish-tag{
   display:inline-block;margin-left:.75em;vertical-align:.16em;
   font-family:var(--kai);font-size:11px;letter-spacing:.2em;
@@ -535,7 +561,7 @@ main{position:relative;z-index:2}
   box-shadow:
     0 0 0 1px rgba(61,48,25,.22) inset,
     -1px -1px 1px rgba(255,255,255,.32) inset,
-    0 2px 4px -2px rgba(27,25,22,.5);
+    0 2px 4px -2px rgba(25,23,20,.5);
 }
 /* 两端轴头：轴末端加粗的那一小段（横放的短圆柱），不是贴上去的球 */
 .axis::before,.axis::after{
@@ -553,7 +579,7 @@ main{position:relative;z-index:2}
       rgba(58,44,20,0) 78%, rgba(58,44,20,.42) 100%);
   box-shadow:
     0 0 0 1px rgba(61,48,25,.30) inset,
-    0 2px 4px -2px rgba(27,25,22,.5);
+    0 2px 4px -2px rgba(25,23,20,.5);
 }
 .axis::before{left:calc(var(--rod) * -.48)}
 .axis::after{right:calc(var(--rod) * -.48)}
@@ -567,8 +593,8 @@ main{position:relative;z-index:2}
   justify-content:center;      /* 纸在缝里居中 —— 展开时两头同时往外露 */
   overflow:hidden;
   height:16px;                 /* 合拢：两轴之间只剩纸卷的那一道边 */
-  background:linear-gradient(180deg,#fdf9f0,#f6efdf 44%,#efe6d2);
-  box-shadow:0 16px 24px -22px rgba(27,25,22,.8);
+  background:linear-gradient(180deg,#fdfcf9,#f9f7f1 44%,#f4f1e9);
+  box-shadow:0 16px 24px -22px rgba(25,23,20,.8);
   transition:
     height var(--t) var(--open) var(--t-delay),
     margin-top .55s var(--open) var(--t-delay),
@@ -599,11 +625,11 @@ main{position:relative;z-index:2}
 /* 信纸：卷在里面，随展开从正中浮出来 */
 .scroll-paper{
   position:relative;flex:0 0 auto;   /* 不许被 flex 压扁 */
-  background:linear-gradient(180deg,#faf5ea,#f4ecdb 30%,#f0e7d4);
+  background:linear-gradient(180deg,#fdfcf8,#f9f6f0 30%,#f4f0e8);
   padding:clamp(24px,4.6vw,54px) clamp(19px,4.8vw,58px) clamp(28px,5.2vw,60px);
   box-shadow:
-    0 18px 24px -22px rgba(27,25,22,.95) inset,
-    0 -16px 22px -22px rgba(27,25,22,.8) inset;
+    0 18px 24px -22px rgba(25,23,20,.95) inset,
+    0 -16px 22px -22px rgba(25,23,20,.8) inset;
 }
 .scroll-paper::before{                 /* 纸从轴上卷下来的那一段暗影 */
   content:'';position:absolute;left:0;right:0;top:0;height:clamp(20px,2.6vw,34px);
@@ -672,7 +698,7 @@ main{position:relative;z-index:2}
   box-shadow:
     0 0 0 3px rgba(228,215,182,.96),
     0 0 0 4.5px rgba(58,44,26,.16),
-    0 9px 16px -9px rgba(27,25,22,.8),
+    0 9px 16px -9px rgba(25,23,20,.8),
     -1px -2px 4px rgba(0,0,0,.30) inset,
     1px 1px 3px rgba(255,255,255,.34) inset;
   transition:transform .8s cubic-bezier(.4,.1,.3,1),opacity .6s var(--ease);
@@ -753,10 +779,10 @@ main{position:relative;z-index:2}
 }
 .paper-bit{
   position:fixed;z-index:9;pointer-events:none;border-radius:1px;
-  background:#e9e0c9;
-  box-shadow:0 1px 2px -1px rgba(27,25,22,.45);
+  background:#ebe7de;
+  box-shadow:0 1px 2px -1px rgba(25,23,20,.45);
 }
-.paper-bit:nth-child(even){background:#f3ecdc}
+.paper-bit:nth-child(even){background:#f5f3ee}
 
 /* ============================================================================
    页脚
@@ -778,8 +804,8 @@ footer{
    ============================================================================ */
 @media (max-width:900px){
   /* 段落节奏：原来每段上下各 76px，两段相接就空出 150px，手机上一路划下去很空 */
-  .sec{padding:clamp(48px,7.6vw,84px) 0}
-  .sh{margin-bottom:clamp(24px,4.4vw,38px)}
+  .sec{padding:clamp(40px,6.2vw,64px) 0 clamp(30px,4.6vw,48px)}
+  .sh{margin-bottom:clamp(20px,3.4vw,32px)}
   .cv-mid{gap:14px}
   .cal{--num:clamp(70px,21vw,120px)}
   .seal{--sz:66px;font-size:calc(66px * .27)}
@@ -799,8 +825,8 @@ footer{
 }
 @media (max-width:560px){
   /* 再收紧一档：手机单列以后，段与段之间不需要那么多空 */
-  .sec{padding:46px 0}
-  .sh{margin-bottom:24px}
+  .sec{padding:34px 0}
+  .sh{margin-bottom:20px}
   .chron li{padding:clamp(15px,4vw,22px) 0}
   .wish li{padding:clamp(15px,4vw,20px) 0}
   .wish-lead{margin-bottom:clamp(16px,4.6vw,24px)}
@@ -844,6 +870,474 @@ footer{
   .letter{opacity:1!important;transform:none!important}
   .sec{padding:24px 0}
 }
+
+/* --------------------------------------------------------- 背景乐开关 */
+.mu{
+  position:fixed;right:clamp(14px,2.2vw,26px);bottom:clamp(14px,2.2vw,26px);z-index:40;
+  display:inline-flex;align-items:center;gap:.62em;
+  padding:.52em .96em .54em;
+  font-family:var(--kai);font-size:15px;letter-spacing:.16em;line-height:1;
+  color:var(--ink-3);background:rgba(243,241,236,.92);
+  border:1px solid rgba(25,23,20,.13);border-radius:999px;
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  box-shadow:0 3px 14px rgba(25,23,20,.09);
+  cursor:pointer;-webkit-user-select:none;user-select:none;
+  transition:color .35s var(--ease),background .35s var(--ease),
+             border-color .35s var(--ease),box-shadow .35s var(--ease),
+             transform .35s var(--ease);
+}
+.mu:hover{transform:translateY(-2px);color:var(--ink-2);border-color:var(--zhu-soft)}
+.mu:focus-visible{outline:2px solid var(--zhu);outline-offset:3px}
+.mu.on{color:#fbfaf7;background:var(--zhu);border-color:transparent;
+       box-shadow:0 4px 16px rgba(163,43,34,.28)}
+.mu-ic{display:inline-flex;align-items:flex-end;gap:2.5px;height:13px;width:15px}
+.mu-ic i{display:block;width:2.5px;height:38%;border-radius:2px;background:currentColor;opacity:.85}
+.mu-ic i:nth-child(2){height:74%}
+.mu-ic i:nth-child(3){height:52%}
+.mu.on .mu-ic i{animation:muBar .86s ease-in-out infinite}
+.mu.on .mu-ic i:nth-child(2){animation-delay:.14s}
+.mu.on .mu-ic i:nth-child(3){animation-delay:.28s}
+@keyframes muBar{0%,100%{height:32%}50%{height:100%}}
+.mu-t{font-size:14px}
+@media (max-width:560px){
+  .mu{padding:.48em .84em .5em}
+  .mu-t{font-size:13px}
+}
+@media print{.mu{display:none!important}}
+@media (prefers-reduced-motion:reduce){
+  .mu,.mu:hover{transform:none}
+  .mu.on .mu-ic i{animation:none}
+}
+
+/* ============================================================================
+   七 · 墨块（落款 ＋ 页脚）—— 全页唯一的暗锚点
+   整页都是浅纸，读到结尾缺一个重色收口，通篇就「闷」；
+   换成墨底之后，朱砂印第一次真正跳出来（印面 6.36:1，纸白字 15.7:1）。
+   ============================================================================ */
+.sign-sec{
+  /* 顶上那根朱砂发丝线，是浅纸与墨块之间的分界 */
+  border-top:1px solid var(--zhu);
+  background:
+    radial-gradient(130% 96% at 10% 0%,rgba(163,43,34,.16),transparent 62%),
+    linear-gradient(180deg,var(--deep),var(--deep-2));
+  color:var(--on-deep);
+}
+.sign-sec .sign-in{border-top:1px solid var(--deep-line)}
+.sign-sec .sign-mid{background:var(--deep-line)}
+.sign-sec .st-date{color:var(--on-deep-3)}
+.sign-sec .st-big{color:var(--on-deep)}
+.sign-sec .st-reveal{color:var(--on-deep-2)}
+.sign-sec .st-reveal::before{
+  content:'';display:inline-block;width:6px;height:6px;
+  background:var(--zhu);margin-right:.72em;vertical-align:.14em;
+  transform:rotate(45deg);
+}
+.sign-sec .seal-hint{color:var(--on-deep-3)}
+.sign-sec .seal{
+  box-shadow:
+    0 0 0 1px rgba(232,228,219,.3),
+    0 0 0 7px rgba(163,43,34,.15),
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 16px 32px -16px rgba(0,0,0,.8);
+}
+footer{
+  border-top:1px solid var(--deep-line);
+  background:linear-gradient(180deg,var(--deep-2),var(--deep));
+}
+footer .foot-in{color:var(--on-deep-3)}
+footer .foot-in b{color:var(--on-deep-2)}
+
+/* ============================================================================
+   六 · 小互动（翻卡片 / 小秘密 / 今日好运签）
+   与全帖同一套材料语言：宣纸底、细描边、小圆角、楷体标题，
+   朱砂与石青都只做「点状 + 细线」，不铺色块。
+   ============================================================================ */
+.interact{display:flex;flex-direction:column;gap:clamp(50px,6.4vw,84px)}
+
+/* ---- 三块各自的小标题 ---- */
+.ib{margin-bottom:clamp(20px,2.8vw,30px)}
+.ib-eyebrow{
+  display:block;font-family:var(--en);font-size:11.5px;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--ink-4);
+}
+.ib-t{
+  margin:.75em 0 0;display:flex;align-items:center;gap:.62em;
+  font-family:var(--kai);font-weight:400;
+  font-size:clamp(18px,2.15vw,23px);letter-spacing:.14em;color:var(--ink);
+}
+.ib-t::before{content:'';flex:0 0 auto;width:3px;height:1em;background:var(--zhu);border-radius:1px}
+.ib.accent-qing .ib-t::before{background:var(--qing)}
+.ib-s{margin:.7em 0 0;font-size:clamp(13.5px,1.5vw,15px);color:var(--ink-3);max-width:54ch}
+
+/* ---- 一 · 翻卡片：三张，点一下翻面 ---- */
+.flip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.4vw,26px)}
+.flip-card{
+  position:relative;height:clamp(230px,24vw,268px);
+  perspective:1400px;cursor:pointer;
+  background:none;border:0;padding:0;text-align:left;
+  transform:rotate(var(--tilt,0deg));
+  transition:transform .35s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.flip-card:nth-child(1){--tilt:-.9deg}
+.flip-card:nth-child(2){--tilt:.7deg}
+.flip-card:nth-child(3){--tilt:-.5deg}
+.flip-card:hover{transform:rotate(0) translateY(-4px)}
+.flip-card:focus-visible{outline:2px solid var(--zhu);outline-offset:4px}
+.flip-inner{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform .8s var(--ease);
+}
+.flip-card.is-flipped .flip-inner{transform:rotateY(180deg)}
+.flip-face{
+  position:absolute;inset:0;border-radius:4px;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:clamp(20px,2.6vw,30px);text-align:center;
+}
+/* 正面：还封着的那一面 —— 斜纹纸底 ＋ 一道虚线内框 ＋ 居中一枚朱砂印 */
+.flip-front{
+  border:var(--edge);
+  background:
+    repeating-linear-gradient(45deg,rgba(25,23,20,.02) 0 2px,transparent 2px 8px),
+    linear-gradient(180deg,var(--card-2),var(--card));
+  box-shadow:var(--sh-1),inset 0 1px 0 rgba(255,255,255,.7);
+}
+.flip-front::after{
+  content:'';position:absolute;inset:9px;border-radius:2px;
+  border:1px dashed rgba(25,23,20,.17);pointer-events:none;
+}
+.flip-seal{
+  width:60px;height:60px;border-radius:50%;
+  display:grid;place-items:center;color:#fdfaf4;
+  background:radial-gradient(circle at 34% 28%,#c4483a 0%,#a32b22 46%,#7d1f18 100%);
+  box-shadow:
+    0 0 0 1px rgba(125,31,24,.45),
+    0 8px 18px -10px rgba(125,31,24,.85),
+    -1px -1px 3px rgba(0,0,0,.16) inset,
+    1px 1px 3px rgba(255,255,255,.22) inset;
+}
+.flip-seal svg{width:27px;height:27px}
+.flip-hint{
+  margin-top:15px;font-family:var(--kai);font-size:12.5px;
+  letter-spacing:.24em;color:var(--ink-4);
+}
+/* 背面：翻过来的那一面 —— 左侧一条朱砂竖线，正文用仿宋 */
+.flip-back{
+  transform:rotateY(180deg);
+  align-items:flex-start;justify-content:flex-start;text-align:left;
+  border:1px solid rgba(163,43,34,.26);overflow:hidden;
+  background:linear-gradient(180deg,var(--card),var(--card-2));
+  box-shadow:var(--sh-2);
+}
+.flip-back::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--zhu)}
+.flip-no{
+  font-family:var(--en);font-size:12px;letter-spacing:.24em;color:var(--zhu);
+  padding-bottom:2px;border-bottom:1px dashed var(--zhu-soft);
+}
+.flip-back p{
+  margin:.95em 0 0;font-family:var(--fang);
+  font-size:clamp(14px,1.5vw,15.5px);line-height:2;color:var(--ink);
+}
+.flip-tip{
+  margin-top:auto;padding-top:.9em;
+  font-family:var(--kai);font-size:11.5px;letter-spacing:.2em;color:var(--ink-4);
+}
+
+/* ---- 二 · 小秘密：六张，点开揭晓（石青这一区）---- */
+.secrets{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.9vw,20px)}
+.secret{
+  position:relative;text-align:left;cursor:pointer;
+  padding:clamp(17px,2.1vw,23px) clamp(16px,1.9vw,21px);
+  border:var(--edge);border-radius:4px;
+  background:linear-gradient(180deg,var(--card),var(--card-2));
+  box-shadow:var(--sh-1);
+  transform:rotate(var(--tilt,0deg));
+  transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.secret:nth-child(2){--tilt:.55deg}
+.secret:nth-child(3){--tilt:-.65deg}
+.secret:nth-child(5){--tilt:.5deg}
+.secret:nth-child(6){--tilt:-.5deg}
+.secret:hover{transform:rotate(0) translateY(-3px);box-shadow:var(--sh-2);border-color:rgba(52,89,91,.28)}
+.secret:focus-visible{outline:2px solid var(--qing);outline-offset:3px}
+.secret.is-open{cursor:default;transform:rotate(0);box-shadow:var(--sh-1);border-color:rgba(52,89,91,.24)}
+.sq{
+  display:flex;gap:.68em;align-items:flex-start;
+  font-family:var(--kai);font-size:clamp(14px,1.5vw,15.5px);
+  letter-spacing:.05em;line-height:1.75;color:var(--ink);
+}
+.sq i{
+  flex:0 0 auto;width:21px;height:21px;margin-top:.15em;
+  border-radius:50%;background:var(--qing);color:#fdfaf4;
+  font-family:var(--en);font-style:normal;font-size:11.5px;
+  display:grid;place-items:center;
+}
+.sa{
+  display:none;margin:.9em 0 0;padding:.75em .85em;
+  border:1px dashed var(--qing-soft);border-radius:2px;
+  background:var(--qing-wash);
+  font-family:var(--fang);font-size:clamp(13.5px,1.45vw,14.5px);
+  line-height:1.85;color:var(--ink-2);
+}
+.sa b{font-weight:400;color:var(--qing-2);letter-spacing:.06em}
+.secret.is-open .sa{display:block;animation:ibIn .42s var(--ease)}
+@keyframes ibIn{0%{opacity:0;transform:translateY(-6px)}100%{opacity:1;transform:none}}
+.shint{
+  margin:.8em 0 0;font-family:var(--kai);font-size:11.5px;
+  letter-spacing:.22em;color:var(--ink-4);
+}
+.secret.is-open .shint{display:none}
+
+/* ---- 三 · 今日好运签：一座寺庙签筒，点一下从筒里抽一支 ---- */
+.luck{
+  position:relative;text-align:center;
+  padding:clamp(30px,4vw,44px) clamp(18px,3.2vw,44px) clamp(26px,3.4vw,40px);
+  border:var(--edge);border-radius:4px;
+  background:
+    radial-gradient(90% 70% at 50% 0%,rgba(163,43,34,.045),transparent 68%),
+    linear-gradient(180deg,var(--card),var(--card-2));
+  box-shadow:var(--sh-2);
+  transform:rotate(-.35deg);
+}
+.luck-tag{
+  position:absolute;top:-13px;left:clamp(20px,3.4vw,38px);
+  padding:5px 14px 4px;border-radius:2px;
+  background:var(--zhu);color:#fdfaf4;
+  font-family:var(--kai);font-size:12.5px;letter-spacing:.34em;
+  transform:rotate(-2.6deg);
+  box-shadow:0 8px 18px -12px rgba(125,31,24,.9);
+}
+
+/* ── 签筒本体的几何 ────────────────────────────────────────────────
+   筒身刻意用和「信卷木轴」同一套胡桃木色，签条是浅竹色 —— 两处材料对得上。
+   层次（z-index）从后往前：筒口内壁 1 → 竹签 2 → 抽出那支 3
+   → 筒身 4（挡住竹签下半截）→ 筒口前唇 5（挡住签从口里钻出来的那一段）。
+   抽出的签从 translateY(38px)（筒身里，看不见）升到 -42px，露出约 72px。 */
+.tube-zone{
+  --tube-w:clamp(96px,13.4vw,124px);
+  --tube-h:clamp(132px,19vw,184px);
+  --sw:clamp(7px,.74vw,9.5px);          /* 竹签宽度 */
+  --xstep:clamp(3.8px,.5vw,4.5px);      /* 竹签左右散开的步长 */
+  --rstep:1.1deg;                       /* 每支多倾一点 */
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:clamp(64px,8.4vw,84px);   /* 给抽出来的那支签留出头顶的空 */
+}
+.tube{
+  position:relative;
+  width:var(--tube-w);height:var(--tube-h);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform .42s var(--ease);
+}
+.tube:hover{transform:translateY(-4px)}
+.tube:focus-visible{outline:2px solid var(--zhu);outline-offset:9px;border-radius:3px}
+.tube.is-drawing{animation:tubeShake .52s var(--ease)}
+@keyframes tubeShake{
+  0%,100%{transform:translateY(0) rotate(0)}
+  12%{transform:translateY(-3px) rotate(-1.7deg)}
+  30%{transform:translateY(-4px) rotate(1.6deg)}
+  48%{transform:translateY(-3px) rotate(-1.1deg)}
+  66%{transform:translateY(-2px) rotate(.8deg)}
+  84%{transform:translateY(-1px) rotate(-.4deg)}
+}
+
+/* 筒口内壁：暗椭圆，在筒身顶边之上露出一圈「洞」 */
+.tube-mouth{
+  position:absolute;z-index:1;left:0;right:0;top:-13px;height:32px;
+  border-radius:50%;
+  background:radial-gradient(ellipse at 50% 46%,#2a1f0d 0%,#140d05 56%,#080502 100%);
+  box-shadow:inset 0 4px 6px -2px rgba(0,0,0,.7);
+}
+/* 竹签：插在筒里，签头比筒口高出一截 */
+.tube-sticks{position:absolute;inset:0;z-index:2}
+.tube-sticks i{
+  position:absolute;left:50%;bottom:0;
+  width:var(--sw);height:calc(var(--tube-h) + 34px + var(--y,0px));
+  transform-origin:50% 100%;
+  transform:translateX(calc(-50% + (var(--i) - 5.5) * var(--xstep)))
+            rotate(calc((var(--i) - 5.5) * var(--rstep)));
+  border-radius:calc(var(--sw) * .42) calc(var(--sw) * .42) 1px 1px;
+  background:linear-gradient(90deg,#a98f55 0%,#cbb279 24%,#e8d7a8 46%,#c3a86e 70%,#9c8348 100%);
+  box-shadow:0 1px 1px -0.5px rgba(25,23,20,.45);
+}
+.tube-sticks i::after{                  /* 签头：一抹淡墨，画出签条的端面 */
+  content:'';position:absolute;left:0;right:0;top:0;height:6px;
+  border-radius:calc(var(--sw) * .42) calc(var(--sw) * .42) 0 0;
+  background:linear-gradient(180deg,rgba(25,23,20,.42),rgba(25,23,20,.04));
+}
+.tube-sticks i:nth-child(3n){--y:-9px}
+.tube-sticks i:nth-child(3n+2){--y:-4px}
+
+/* 抽出来的那一支：从筒里升起来，签头点朱砂，签身竖写签级。
+   几何全部按筒高取比例，换尺寸也不会错位 ——
+   签尾钉在筒底（bottom 0.24T），签顶藏进筒口下沿（0.14T 处），
+   靠 translateY 从 +0.24T 拉到 -0.32T，露出约 0.42T。
+   关键：两个端点在整段行程里都留在筒内，筒底不会漏出一截签尾。 */
+.tube-drawn{
+  position:absolute;z-index:3;left:50%;
+  bottom:calc(var(--tube-h) * .24);
+  width:calc(var(--sw) + 4px);height:calc(var(--tube-h) * .86);
+  border-radius:3px 3px 1px 1px;
+  background:linear-gradient(90deg,#9c8348 0%,#cbb279 28%,#efe0b6 48%,#c3a86e 72%,#8f7742 100%);
+  box-shadow:0 3px 8px -3px rgba(25,23,20,.5);
+  transform:translateX(-50%) translateY(calc(var(--tube-h) * .24));
+  opacity:0;
+  transition:transform .34s var(--ease),opacity .2s linear;
+}
+.tube.is-out .tube-drawn{
+  transform:translateX(-50%) translateY(calc(var(--tube-h) * -.32)) rotate(-9deg);
+  opacity:1;
+  transition:transform .78s cubic-bezier(.2,.72,.2,1),opacity .3s linear;
+}
+.tube-drawn::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:9px;
+  border-radius:3px 3px 0 0;
+  background:linear-gradient(180deg,#b8362b,#8a221a);
+  box-shadow:inset 0 -1px 0 rgba(0,0,0,.28);
+}
+.tube-drawn-txt{
+  position:absolute;left:50%;top:15px;transform:translateX(-50%);
+  width:calc(var(--sw) + 4px);height:46px;
+  writing-mode:vertical-rl;text-orientation:upright;white-space:nowrap;
+  font-family:var(--kai);font-weight:400;
+  font-size:clamp(9.5px,1.05vw,11px);line-height:1;letter-spacing:0;
+  color:var(--zhu-2);opacity:0;
+  transition:opacity .3s var(--ease);
+}
+.tube.is-out .tube-drawn-txt{opacity:1;transition:opacity .34s var(--ease) .46s}
+
+/* 筒身：胡桃木。竖走的木纹 ＋ 横向的柱面受光，中偏左提亮、两侧压深，
+   比纸面重得多，才镇得住这一块；浅竹签压在深筒上才分得开。 */
+.tube-body{
+  position:absolute;z-index:4;inset:0;
+  border-radius:7px 7px 16px 16px / 7px 7px 19px 19px;
+  background:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.10) 0 1px,transparent 1px 5px),
+    linear-gradient(90deg,
+      #1a1206 0%,#2c2011 8%,#42321a 20%,#5f4a28 33%,
+      #8b7048 44%,#6a5331 55%,#4a381d 70%,#2d2210 86%,#140d04 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.18),
+    inset 0 -14px 22px -14px rgba(0,0,0,.55),
+    0 22px 40px -26px rgba(25,23,20,.9);
+}
+.tube-band{                              /* 筒身上一道朱砂标签，竖写「簽」 */
+  position:absolute;left:50%;top:23%;bottom:21%;width:15px;
+  transform:translateX(-50%);
+  border-radius:2px;
+  background:linear-gradient(90deg,#7d1f18,#a32b22 26%,#c4483a 50%,#a32b22 74%,#7a1e16 100%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.3),0 2px 6px -2px rgba(0,0,0,.55);
+  display:grid;place-items:center;
+  font-family:var(--kai);font-size:10.5px;color:#fdfaf4;
+  writing-mode:vertical-rl;letter-spacing:.1em;
+  text-shadow:0 1px 1px rgba(0,0,0,.4);
+}
+/* 筒口前唇：把「签从口里钻出来」那一段挡在前面，
+   顶边留一道受光的浅木，筒壁的厚度才看得出来 */
+.tube-rim{
+  position:absolute;z-index:5;left:0;right:0;top:-13px;height:32px;
+  border-radius:50%;
+  clip-path:inset(44% 0 0 0);
+  background:linear-gradient(180deg,#a48a58 0%,#6b5330 32%,#3a2c14 76%,#221809 100%);
+  box-shadow:
+    inset 0 2px 4px -2px rgba(0,0,0,.55),
+    0 -1px 0 rgba(255,255,255,.12);
+}
+.tube-hint{
+  margin:clamp(15px,2.1vw,21px) 0 0;
+  font-family:var(--kai);font-size:12.5px;letter-spacing:.24em;
+  color:var(--ink-4);transition:color .3s var(--ease);
+}
+.tube:hover + .tube-hint{color:var(--zhu)}
+.luck-paper{
+  position:relative;max-width:640px;
+  margin:clamp(14px,2.2vw,22px) auto 0;
+  padding:clamp(26px,3.4vw,40px) clamp(18px,3vw,34px);
+  background:var(--card);
+  border:1px solid rgba(25,23,20,.09);border-radius:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 12px 28px -24px rgba(25,23,20,.7);
+}
+.luck-paper::after{
+  content:'';position:absolute;inset:7px;border-radius:2px;
+  border:1px dashed rgba(163,43,34,.2);pointer-events:none;
+}
+.luck-text{
+  position:relative;margin:0;min-height:4.4em;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--kai);font-size:clamp(17px,2.05vw,21px);
+  line-height:1.95;letter-spacing:.08em;color:var(--ink);
+  transition:opacity .3s var(--ease),transform .3s var(--ease);
+}
+.luck-text.swap{opacity:0;transform:translateY(8px)}
+.luck-meta{
+  position:relative;margin:clamp(12px,1.8vw,18px) 0 0;
+  font-family:var(--en);font-size:12.5px;letter-spacing:.18em;color:var(--ink-3);
+  transition:opacity .3s var(--ease);
+}
+.luck-meta.swap{opacity:0}
+.luck-meta b{font-weight:400;color:var(--zhu);letter-spacing:.2em}
+.ib-btns{
+  position:relative;margin-top:clamp(22px,2.8vw,30px);
+  display:flex;gap:13px;justify-content:center;flex-wrap:wrap;
+}
+.pbtn{
+  display:inline-flex;align-items:center;gap:.6em;
+  padding:.66em 1.55em .7em;border-radius:2px;cursor:pointer;
+  font-family:var(--kai);font-size:15.5px;letter-spacing:.2em;
+  color:#fdfaf4;background:var(--zhu);
+  border:1px solid rgba(125,31,24,.5);
+  box-shadow:0 10px 22px -16px rgba(125,31,24,.95);
+  transition:transform .25s var(--ease),background .25s var(--ease),
+             box-shadow .25s var(--ease),color .25s var(--ease);
+  -webkit-tap-highlight-color:transparent;
+}
+.pbtn:hover{transform:translateY(-2px);background:var(--zhu-2);box-shadow:0 14px 26px -16px rgba(125,31,24,1)}
+.pbtn:active{transform:translateY(0)}
+.pbtn:focus-visible{outline:2px solid var(--zhu-2);outline-offset:3px}
+.pbtn.ghost{
+  color:var(--ink-2);background:transparent;
+  border:1px solid var(--line);box-shadow:none;
+}
+.pbtn.ghost:hover{background:rgba(25,23,20,.035);border-color:rgba(25,23,20,.3);color:var(--ink)}
+
+/* ---- 互动区响应式 ---- */
+@media (max-width:860px){
+  .flip-grid{grid-template-columns:1fr;gap:14px}
+  .flip-card{height:224px}
+  .secrets{grid-template-columns:repeat(2,1fr)}
+  .interact{gap:clamp(44px,8vw,60px)}
+  .tube-zone{padding-top:clamp(66px,10vw,82px)}
+}
+@media (max-width:560px){
+  .secrets{grid-template-columns:1fr;gap:12px}
+  .luck{transform:none;padding:24px 15px 22px}
+  .luck-tag{left:16px}
+  .tube-zone{--sw:7.4px;padding-top:72px}
+  .tube-hint{font-size:12px;letter-spacing:.18em}
+  .pbtn{font-size:15px;padding:.62em 1.3em .66em}
+}
+/* ---- 墨块与互动区的打印 / 无脚本兜底 ---- */
+@media print{
+  .sign-sec{background:#fff!important;color:#000!important;border-top:1px solid #000!important}
+  .sign-sec .st-big,.sign-sec .st-date,.sign-sec .st-reveal,.sign-sec .seal-hint{color:#000!important}
+  .sign-sec .sign-in{border-top:1px solid #999!important}
+  .sign-sec .sign-mid{background:#999!important}
+  footer{background:#fff!important;border-top:1px solid #999!important}
+  footer .foot-in,footer .foot-in b{color:#000!important}
+  .ib-btns,.tube-zone{display:none!important}
+  .flip-card{height:auto!important;perspective:none!important;transform:none!important}
+  .flip-inner{transform:none!important}
+  .flip-face{position:static!important;box-shadow:none!important;border:0!important;padding:8px 0!important}
+  .flip-front{display:none!important}
+  .flip-back{transform:none!important;background:none!important;border:0!important}
+  .secret{box-shadow:none!important;transform:none!important;break-inside:avoid}
+  .secret .sa{display:block!important}
+  .shint{display:none!important}
+  .luck{transform:none!important;box-shadow:none!important;break-inside:avoid}
+}
 </style>
 <noscript>
 <style>
@@ -856,6 +1350,14 @@ footer{
     margin-top:calc(var(--rod) * -.28)!important;margin-bottom:calc(var(--rod) * -.28)!important}
   .scroll-body::after{display:none!important}
   .letter{opacity:1!important;transform:none!important;transition:none!important}
+  /* 互动区：没有脚本也能读 —— 卡片直接摊开、秘密直接揭晓、抽签按钮收起 */
+  .flip-front{display:none!important}
+  .flip-card{height:auto!important;perspective:none!important;transform:none!important}
+  .flip-inner{transform:none!important}
+  .flip-face{position:static!important;box-shadow:none!important;border:0!important;padding:8px 0!important}
+  .flip-back{transform:none!important;background:none!important;border:0!important}
+  .secret .sa{display:block!important}
+  .shint,.ib-btns,.tube-zone{display:none!important}
 </style>
 </noscript>
 </head>
@@ -925,13 +1427,13 @@ footer{
 
       <div class="post" data-rv>
         <div class="post-cd">
-          <b class="cd-num" id="cdNum">—</b>
-          <span class="cd-lbl" id="cdLbl">天后</span>
+          <b class="cd-num">今</b>
+          <span class="cd-lbl">就是今天</span>
         </div>
         <div class="post-body">
           <p class="post-l1"><em>2026 · 10 · 24</em>　星期六</p>
-          <p class="post-l2">那天你会在山路上，跑 <b>26.01</b> 公里，爬 <b>1794</b> 米。</p>
-          <p class="post-l3">先跑完，再回家切蛋糕。</p>
+          <p class="post-l2">今天你在山路上，跑了 <b> 27 </b> 公里，爬了 <b> 1692 </b> 米。</p>
+          <p class="post-l3">回家切蛋糕。</p>
         </div>
       </div>
     </div>
@@ -1060,7 +1562,7 @@ footer{
   </section>
 
   <!-- ============================================================
-       五 · 信（原文照录，只换成横排 ＋ 卷轴展开）
+       伍 · 信（原文照录，只换成横排 ＋ 卷轴展开）
        ============================================================ -->
   <section class="sec" id="letter">
     <div class="wrap">
@@ -1080,7 +1582,7 @@ footer{
           <div class="scroll-body" id="scrollBody">
             <div class="scroll-paper">
               <div class="letter" id="letterBody">
-          <span class="p">生日快乐。</span><i class="gap"></i><span class="p">从 2025 年 1 月 18 日到今天，我们已经一起走了 <span id="letterDays">629</span> 天。这些日子里，我们爬了好几座山，健身房的卡没有被浪费，跑鞋也磨掉了一层底。</span><i class="gap"></i><span class="p">你今年特别忙。五月换工作之后，很多个晚上你都在回消息、改东西。我知道你想早点把项目做完，也知道你说“没事”的时候其实有点累。所以新的一岁，希望你能身体健康，事业高升，天天开心。</span><i class="gap"></i><span class="p">至于今天——10 月 24 号，<b>是你的生日</b>。这一天我们也会站上越野赛起跑线，但你先是你，再是我的跑友，这一天永远先是你的。切不切蛋糕不重要，重要的是有人记得、有人陪。</span><i class="gap"></i><span class="p">所以我不祝你跑得快。 我祝你不抽筋、不走错路、不中暑，祝你在每一个上坡都还能抬头看看天，祝你在终点线看到我的时候，还有力气笑出来。</span><i class="gap"></i><span class="p">新的一岁，愿你有山可爬，有路可跑，有人可等。回头看看，我一直在。</span><i class="gap big"></i><span class="p">最最最重要的的一点，对我要更好一点，多请我吃饭，早点让我摸到腹肌！</span><i class="gap big"></i><span class="sig">爱你的 <b id="signOut">你的女朋友</b></span>
+          <span class="p">生日快乐。</span><i class="gap"></i><span class="p">从 2025 年 1 月 18 日到今天，我们已经一起走了 <span id="letterDays">629</span> 天。这些日子里，我们爬了很多座山，健身房的卡没有被浪费，肌肉酸痛过了好几轮。</span><i class="gap"></i><span class="p">你今年特别忙。五月换工作之后，很多个晚上你都在回消息、改东西。我知道你想早点把项目做完，也知道你说“没事”的时候其实有点累。所以新的一岁，希望你能身体健康，事业高升，天天开心。</span><i class="gap"></i><span class="p">至于今天——10 月 24 号，<b>是你的生日</b>。这一天我们也会站上越野赛起跑线，但你先是你，再是我的跑友，这一天永远先是你的。切不切蛋糕不重要，重要的是有人记得、有我陪着你。</span><i class="gap"></i><span class="p">所以我不祝你跑得快。 我祝你不抽筋、不走错路、不中暑，不失温，祝你在每一个上坡都还能抬头看看天，祝你在终点线看到我的时候，还有力气笑出来，记得在终点领取惊喜。</span><i class="gap"></i><span class="p">新的一岁，愿你有山可爬，有路可跑，有人可等。 台头看看，我一直在。</span><i class="gap big"></i><span class="p">最最最重要的的一点，对我要更好一点，多请我吃饭，早点让我摸到腹肌！</span><i class="gap big"></i><span class="sig">爱你的 <b id="signOut">你的女朋友</b></span>
               </div>
             </div>
           </div>
@@ -1099,7 +1601,198 @@ footer{
   </section>
 
   <!-- ============================================================
-       六 · 落款
+       陸 · 小互动（翻卡片 / 小秘密 / 今日好运签）
+       ============================================================ -->
+  <section class="sec" id="play">
+    <div class="wrap">
+      <div class="sh" data-rv>
+        <span class="sh-no">陸</span>
+        <h2 class="sh-t">小互动</h2>
+        <span class="sh-rule"></span>
+      </div>
+
+      <div class="interact">
+
+        <!-- 一 · 翻卡片 -->
+        <div class="blk" data-rv>
+          <div class="ib accent-zhu">
+            <span class="ib-eyebrow">Flip · Three Cards</span>
+            <h3 class="ib-t">三张卡片，翻过来看看</h3>
+            <p class="ib-s">现在是背面。点一下翻过来，能看到写给你的话。</p>
+          </div>
+
+          <div class="flip-grid">
+            <button class="flip-card" type="button" aria-expanded="false" aria-label="翻开第一张卡片">
+              <div class="flip-inner">
+                <div class="flip-face flip-front">
+                  <span class="flip-seal" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2.5 19.4 9.2 7.6l4 6.6 2.3-3.4 6 8.6z"/>
+                      <path d="M2.5 19.4h19"/>
+                    </svg>
+                  </span>
+                  <span class="flip-hint">点一下拆开</span>
+                </div>
+                <div class="flip-face flip-back">
+                  <span class="flip-no">N° 01</span>
+                  <p>五月换工作之后，你忙了很多。愿这些忙都忙在刀刃上，早日赚大钱，早日退休。</p>
+                  <span class="flip-tip">↩ 再点一下收回</span>
+                </div>
+              </div>
+            </button>
+
+            <button class="flip-card" type="button" aria-expanded="false" aria-label="翻开第二张卡片">
+              <div class="flip-inner">
+                <div class="flip-face flip-front">
+                  <span class="flip-seal" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 20.2S4.6 15.4 4.6 10.4A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7.4 2.4c0 5-7.4 9.8-7.4 9.8z"/>
+                    </svg>
+                  </span>
+                  <span class="flip-hint">点一下拆开</span>
+                </div>
+                <div class="flip-face flip-back">
+                  <span class="flip-no">N° 02</span>
+                  <p>愿从今往后的每一个日子都顺遂你意，运气不再是求而不得，而是常伴在你身边。</p>
+                  <span class="flip-tip">↩ 再点一下收回</span>
+                </div>
+              </div>
+            </button>
+
+            <button class="flip-card" type="button" aria-expanded="false" aria-label="翻开第三张卡片">
+              <div class="flip-inner">
+                <div class="flip-face flip-front">
+                  <span class="flip-seal" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3.2 14.6 9.4 21 11l-5 4.1 1.2 6.6L12 18.4 6.8 21.7 8 15.1 3 11l6.4-1.6z"/>
+                    </svg>
+                  </span>
+                  <span class="flip-hint">点一下拆开</span>
+                </div>
+                <div class="flip-face flip-back">
+                  <span class="flip-no">N° 03</span>
+                  <p>三十一岁了。愿你还有爬山的力气，还有想做的事，还有说走就走的假期。</p>
+                  <span class="flip-tip">↩ 再点一下收回</span>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 二 · 小秘密 -->
+        <div class="blk" data-rv>
+          <div class="ib accent-qing">
+            <span class="ib-eyebrow">Guess About You</span>
+            <h3 class="ib-t">关于你的六个小秘密</h3>
+            <p class="ib-s">点开每一张，看我猜得准不准。</p>
+          </div>
+
+          <div class="secrets">
+            <div class="secret">
+              <p class="sq"><i>1</i>你跑完步，进门第一件事？</p>
+              <p class="sa"><b>我的猜测：</b>先脱鞋瘫一会儿，然后说「今天不拉伸了」</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>2</i>你爬山最常说的话？</p>
+              <p class="sa"><b>我的猜测：</b>「好累啊」——好想下撤但是还能坚持</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>3</i>你相机里最多的照片？</p>
+              <p class="sa"><b>我的猜测：</b>如果不是我，我就揍你</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>4</i>你最喜欢吃的是什么？</p>
+              <p class="sa"><b>我的猜测：</b>年糕和糯叽叽，对不对</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>5</i>发现《沧元图》屯了好多集？</p>
+              <p class="sa"><b>我的猜测：</b>太上头了，好爽</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>6</i>你嘴上最不承认的事？</p>
+              <p class="sa"><b>我的猜测：</b>明明生气了还说「我哪有生气」</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>7</i>最想喝的是？</p>
+              <p class="sa"><b>我的猜测：</b>「一点点」还是加珍珠的那种</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>8</i>有擅长做的菜吗</p>
+              <p class="sa"><b>我的猜测：</b>「好像没有」还有待进步啊，跟你老爸多学习</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+            <div class="secret">
+              <p class="sq"><i>9</i>喜欢做什么呢？</p>
+              <p class="sa"><b>我的猜测：</b>「干坏事你最拿手」</p>
+              <p class="shint">点击揭晓</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 三 · 今日好运签：寺庙签筒，点一下从筒里抽一支 -->
+        <div class="blk" data-rv>
+          <div class="ib accent-zhu">
+            <span class="ib-eyebrow">Today's Fortune</span>
+            <h3 class="ib-t">今日好运签</h3>
+            <p class="ib-s">一共二十支。点一下签筒，看看今天的好运落在哪里。</p>
+          </div>
+
+          <div class="luck">
+            <span class="luck-tag">福 签</span>
+
+            <div class="tube-zone">
+              <div class="tube" id="tubeBtn" role="button" tabindex="0"
+                   aria-label="点一下签筒，抽一支好运签">
+                <span class="tube-mouth" aria-hidden="true"></span>
+
+                <span class="tube-sticks" aria-hidden="true">
+                  <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i>
+                  <i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i>
+                  <i style="--i:6"></i><i style="--i:7"></i><i style="--i:8"></i>
+                  <i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i>
+                </span>
+
+                <span class="tube-drawn" aria-hidden="true">
+                  <b class="tube-drawn-txt" id="tubeTxt">上上签</b>
+                </span>
+
+                <span class="tube-body" aria-hidden="true">
+                  <span class="tube-band">簽</span>
+                </span>
+
+                <span class="tube-rim" aria-hidden="true"></span>
+              </div>
+              <p class="tube-hint" id="tubeHint">点一下签筒 · 抽一支</p>
+            </div>
+
+            <div class="luck-paper">
+              <p class="luck-text" id="luckText">点一下上面的签筒，今天的第一支签送给你。</p>
+              <p class="luck-meta" id="luckMeta">共 20 支 · 尚未开签</p>
+            </div>
+
+            <div class="ib-btns">
+              <button class="pbtn" id="luckDraw" type="button">抽一支</button>
+              <button class="pbtn ghost" id="luckAgain" type="button">再来一支</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       落款（盖章）
        ============================================================ -->
   <section class="sec sign-sec" id="sign">
     <div class="wrap">
@@ -1129,10 +1822,15 @@ footer{
   </div>
 </footer>
 
+<button class="mu" id="muBtn" type="button" aria-pressed="false" aria-label="播放背景乐">
+  <span class="mu-ic" aria-hidden="true"><i></i><i></i><i></i></span>
+  <span class="mu-t" id="muTxt">奏乐</span>
+</button>
+
 <script>
 /* ============================================================================
    生日帖 · 脚本
-   一 · 撕日历      二 · 秒级倒计时    三 · 几笔数（含出生天数）
+   一 · 撕日历      二 · 今日（基准日固定）  三 · 几笔数（含出生天数）
    四 · 展卷（卷轴） 五 · 盖章         六 · 入场
    ============================================================================ */
 (function () {
@@ -1152,17 +1850,18 @@ footer{
 
   var STAMP_LINE = TO ? (TO + '，生日快乐。') : null;
 
-  /* --------------------------------------------------- 时间 */
+  /* --------------------------------------------------- 时间
+     页面是在生日当天（2026-10-24）打开看的，所以一切天数都固定以这一天为基准，
+     不取系统时间 —— 也就不会出现「还有 N 天 / N 天前」这类字样。              */
   var DAY_MS = 86400000;
   var START  = new Date(2025, 0, 18);   // 2025-01-18 在一起
   var BIRTH  = new Date(1995, 9, 24);   // 1995-10-24 出生
-  var TARGET = new Date(2026, 9, 24);   // 2026-10-24 生日（倒计时终点）
-  var today  = new Date(); today.setHours(0, 0, 0, 0);
+  var BASE   = new Date(2026, 9, 24);   // 基准日：2026-10-24，生日当天
 
   function diffDays(a, b) { return Math.round((b - a) / DAY_MS); }
 
-  var passed   = Math.max(0, diffDays(START, today));   // 一起走过多少天
-  var bornDays = Math.max(0, diffDays(BIRTH, today));   // 来到这个世界多少天
+  var passed   = Math.max(0, diffDays(START, BASE));   // 一起走过多少天
+  var bornDays = Math.max(0, diffDays(BIRTH, BASE));   // 来到这个世界多少天
 
   var elDays = document.getElementById('daysNum');
   if (elDays) elDays.textContent = String(passed);
@@ -1170,50 +1869,9 @@ footer{
   var elBorn = document.getElementById('bornDays');
   if (elBorn) elBorn.textContent = String(bornDays);
 
-  /* 信里那句「我们已经一起走了 N 天」同步（原文里是写死的旧数字） */
+  /* 信里那句「我们已经一起走了 N 天」同步 */
   var elLD = document.getElementById('letterDays');
   if (elLD) elLD.textContent = String(passed);
-
-  /* --------------------------------------------------- 今日 · 倒计时（目标 2026-10-24）
-     只露「最大的那个有意义单位」，不显示秒：
-     还有若干天 →「12 天后」／最后一天 →「11 小时后」／最后一小时 →「26 分钟后」。
-     数字只在跨单位时才变一次，画面干净，也不会一直在那儿闪。                     */
-  var cdD   = document.getElementById('cdNum');
-  var cdLbl = document.getElementById('cdLbl');
-  var cdKey = '';
-
-  function cdPaint(value, unit, soft) {
-    var key = value + '|' + unit;
-    if (cdD && cdKey !== key) {
-      cdD.textContent = String(value);
-      cdD.classList.remove('bump');
-      void cdD.offsetWidth;                       /* 强制重排，动画才重播得起来 */
-      cdD.classList.add('bump');
-      cdKey = key;
-    }
-    if (cdLbl) {
-      if (cdLbl.textContent !== unit) cdLbl.textContent = unit;
-      cdLbl.classList.toggle('soft', !!soft);
-    }
-  }
-
-  function tickCountdown() {
-    var ms = TARGET.getTime() - Date.now();
-    if (ms >= 0) {
-      var s = Math.floor(ms / 1000);
-      var d = Math.floor(s / 86400);
-      if (d >= 1) { cdPaint(d, '天后', true); return; }
-      var h = Math.floor(s / 3600);
-      if (h >= 1) { cdPaint(h, '小时后', false); return; }
-      cdPaint(Math.max(1, Math.ceil(s / 60)), '分钟后', false);
-      return;
-    }
-    var past = Math.floor(-ms / DAY_MS);
-    if (past === 0) { cdPaint('今', '就是今天', false); return; }
-    cdPaint(past, '天前', true);
-  }
-  tickCountdown();
-  window.setInterval(tickCountdown, 1000);
 
   /* --------------------------------------------------- 入场 */
   var items = document.querySelectorAll('[data-rv]');
@@ -1516,7 +2174,6 @@ footer{
   if (mqReduce && mqReduce.matches) openScroll();   /* 不要动画就直接展开 */
 
   function boot() {
-    tickCountdown();
     onScroll();
   }
   if (document.readyState === 'complete') boot();
@@ -1536,13 +2193,478 @@ footer{
   window.__post = {
     passed: passed,
     bornDays: bornDays,
-    leftDays: diffTillTarget(),
+    base: '2026-10-24',
     from: FROM,
     openScroll: openScroll,
     replayTear: replayTear
   };
+})();
+</script>
 
-  function diffTillTarget() { return diffDays(today, TARGET); }
+<script>
+/* ============================================================================
+   生日帖 · 背景乐《贺》
+   —— 五声宫调（C 宫：宫 商 角 徵 羽），锣鼓起、笛子唱、古筝托、大阮垫
+   —— 纯 Web Audio 现场合成，零音频文件、零外部请求
+   —— 曲式：引子2 + A段8 + B段8 + A'段8 + 尾声2 = 28 小节，120 拍/分 → 56 秒
+   —— 整段一次排进音频时间轴，循环处尾音落回宫音、与引子首音同度，接缝无痕
+   ============================================================================ */
+(function () {
+  'use strict';
+
+  var btn = document.getElementById('muBtn');
+  var txt = document.getElementById('muTxt');
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC || !btn) return;
+
+  /* ---------------------------------------------------------------- 曲式 */
+  var TEMPO = 120;                     /* 每分钟 120 拍 —— 明快而不赶 */
+  var BEAT = 60 / TEMPO;               /* 一拍 0.5 秒 */
+  var LOOP = 28 * 4 * BEAT;            /* 28 小节 = 56.0 秒 */
+
+  var ctx = null, master = null, bus = null;
+  var playing = false, timer = null, stoppedByUser = false;
+
+  function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+  /* ------------------------------------------------------------ 音频图 */
+  function ensure() {
+    if (ctx) return;
+    ctx = new AC();
+
+    /* 总线上挂一台压缩器，防止锣鼓与笛子叠在一起时削顶 */
+    var comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -12; comp.knee.value = 22; comp.ratio.value = 3.4;
+    comp.attack.value = .006; comp.release.value = .22;
+
+    master = ctx.createGain();
+    master.gain.value = 0.46;
+    master.connect(comp);
+
+    /* 厅堂感：一条阻尼短延迟，让锣声和笛音有回响 */
+    var dly = ctx.createDelay(0.6);
+    dly.delayTime.value = 0.17;
+    var damp = ctx.createBiquadFilter(); damp.type = 'lowpass'; damp.frequency.value = 2400;
+    var fb = ctx.createGain(); fb.gain.value = 0.2;
+    var wet = ctx.createGain(); wet.gain.value = 0.15;
+    master.connect(dly); dly.connect(damp); damp.connect(fb); fb.connect(dly);
+    damp.connect(wet); wet.connect(comp);
+
+    comp.connect(ctx.destination);
+  }
+
+  /* ------------------------------------------------------ 音色 · 笛 */
+  /* 三角波为主 ＋ 八度泛音，迟起颤音模仿吹奏的气口 */
+  function dizi(t, dur, m, vol) {
+    var f = hz(m), rel = 0.13;
+    var o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
+    var o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2;
+    var g2 = ctx.createGain(); g2.gain.value = 0.26;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass';
+    lp.frequency.value = 3200; lp.Q.value = 0.5;
+    var g = ctx.createGain();
+    var atk = Math.min(0.045, dur * 0.4);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + atk);
+    g.gain.setValueAtTime(vol, t + Math.max(atk, dur - 0.05));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur + rel);
+
+    var lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 5.4;
+    var ld = ctx.createGain(); ld.gain.value = 13;      /* ±13 音分，微微颤 */
+    lfo.connect(ld); ld.connect(o.detune);
+
+    o.connect(lp); o2.connect(g2); g2.connect(lp);
+    lp.connect(g); g.connect(bus);
+    o.start(t); o2.start(t); lfo.start(t);
+    var end = t + dur + rel + 0.04;
+    o.stop(end); o2.stop(end); lfo.stop(end);
+  }
+
+  /* ---------------------------------------------------- 音色 · 古筝 */
+  /* 低通随触弦快速下坠 —— 拨弦那种"铮"的起音 */
+  function zheng(t, m, vol, dur) {
+    var f = hz(m);
+    var o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f;
+    var o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.value = f * 2.004;
+    var g2 = ctx.createGain(); g2.gain.value = 0.24;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 1.2;
+    lp.frequency.setValueAtTime(Math.min(9000, f * 7.5), t);
+    lp.frequency.exponentialRampToValueAtTime(Math.max(320, f * 2.1), t + 0.42);
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(lp); o2.connect(g2); g2.connect(lp);
+    lp.connect(g); g.connect(bus);
+    o.start(t); o2.start(t);
+    o.stop(t + dur + 0.05); o2.stop(t + dur + 0.05);
+  }
+
+  /* ---------------------------------------------------- 音色 · 大阮 */
+  function ruan(t, m, dur, vol) {
+    var f = hz(m);
+    var o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
+    var o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 0.5;
+    var g2 = ctx.createGain(); g2.gain.value = 0.3;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 880;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(lp); o2.connect(g2); g2.connect(lp);
+    lp.connect(g); g.connect(bus);
+    o.start(t); o2.start(t);
+    o.stop(t + dur + 0.05); o2.stop(t + dur + 0.05);
+  }
+
+  /* ------------------------------------------------------ 打击乐 */
+  function noise(t, dur, cut, vol, curve) {
+    var n = Math.max(1, (ctx.sampleRate * dur) | 0);
+    var buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, curve);
+    var s = ctx.createBufferSource(); s.buffer = buf;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = cut;
+    var g = ctx.createGain(); g.gain.value = vol;
+    s.connect(lp); lp.connect(g); g.connect(bus);
+    s.start(t); s.stop(t + dur + 0.02);
+  }
+
+  /* 堂鼓：皮面噪声 ＋ 下滑的低频体声 */
+  function drum(t, vol, pitch) {
+    var o = ctx.createOscillator(); o.type = 'sine';
+    o.frequency.setValueAtTime(pitch, t);
+    o.frequency.exponentialRampToValueAtTime(pitch * 0.44, t + 0.13);
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
+    o.connect(g); g.connect(bus);
+    o.start(t); o.stop(t + 0.28);
+    noise(t, 0.055, 760, vol * 0.42, 2.8);
+  }
+
+  /* 小钹：高通噪声 ＋ 7.6k 处一点金属亮峰 */
+  function cymbal(t, vol) {
+    var n = Math.max(1, (ctx.sampleRate * 0.4) | 0);
+    var buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3.6);
+    var s = ctx.createBufferSource(); s.buffer = buf;
+    var hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3400;
+    var pk = ctx.createBiquadFilter(); pk.type = 'peaking';
+    pk.frequency.value = 7600; pk.Q.value = 1.3; pk.gain.value = 7;
+    var g = ctx.createGain(); g.gain.value = vol;
+    s.connect(hp); hp.connect(pk); pk.connect(g); g.connect(bus);
+    s.start(t);
+  }
+
+  /* 大锣：非谐泛音簇 ＋ 极缓下滑，长长的余韵 */
+  function gong(t, vol) {
+    var base = 116, R = [1, 2.41, 3.76, 5.12, 6.58, 8.31];
+    for (var i = 0; i < R.length; i++) {
+      var o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(base * R[i], t);
+      o.frequency.exponentialRampToValueAtTime(base * R[i] * 0.952, t + 1.5);
+      var g = ctx.createGain();
+      var v = vol * (i === 0 ? 1 : 0.46 / (i + 0.7));
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(v, t + 0.018 + i * 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 1.7);
+      o.connect(g); g.connect(bus);
+      o.start(t); o.stop(t + 1.8);
+    }
+    noise(t, 0.1, 5400, vol * 0.3, 3.0);
+  }
+
+  /* -------------------------------------------------------------- 总谱 */
+  /* 旋律音 [相对拍位, 时值(拍), MIDI] —— 全部在 C 宫五声音阶内 */
+  var INTRO = [
+    [0, .5, 72], [.5, .5, 74], [1, .5, 76], [1.5, .5, 79],
+    [2, .5, 81], [2.5, .5, 84], [3, 1, 86],
+    [4, 1, 84], [5, .5, 81], [5.5, .5, 79], [6, 2, 81]
+  ];
+  var A = [
+    [0, .5, 76], [.5, .5, 79], [1, .75, 81], [1.75, .25, 79],
+    [2, .5, 81], [2.5, .5, 79], [3, 1, 76],
+    [4, .5, 79], [4.5, .5, 76], [5, .5, 74], [5.5, .5, 76],
+    [6, .75, 74], [6.75, .25, 76], [7, 1, 72],
+    [8, .5, 76], [8.5, .5, 79], [9, .75, 81], [9.75, .25, 79],
+    [10, .5, 81], [10.5, .5, 84], [11, .5, 81], [11.5, .5, 79],
+    [12, .5, 76], [12.5, .5, 79], [13, 1, 81],
+    [14, .5, 79], [14.5, .5, 76], [15, .5, 74], [15.5, .5, 72]
+  ];
+  var B = [
+    [0, .5, 84], [.5, .5, 81], [1, .5, 79], [1.5, .5, 81],
+    [2, 1, 84], [3, .5, 81], [3.5, .5, 79],
+    [4, .5, 76], [4.5, .5, 79], [5, 1, 81],
+    [6, .5, 81], [6.5, .5, 79], [7, .5, 76], [7.5, .5, 74],
+    [8, .5, 74], [8.5, .5, 76], [9, .5, 79], [9.5, .5, 81],
+    [10, 1, 79], [11, 1, 76],
+    [12, .5, 76], [12.5, .5, 74], [13, 1, 72],
+    [14, .5, 74], [14.5, .5, 76], [15, 1, 79]
+  ];
+  var OUTRO = [
+    [0, .5, 81], [.5, .5, 79], [1, .5, 76], [1.5, .5, 79],
+    [2, 1, 81], [3, 1, 84],
+    [4, .5, 81], [4.5, .5, 76], [5, 1, 79],
+    [6, 2, 72]                                    /* 落回宫音，与引子首音同度 */
+  ];
+
+  /* 低音进行：每小节一个根音（C G A E / C G D C） */
+  var LOW = {
+    lid6: [48, 55, 57, 52, 48, 55, 50, 48],
+    mid6: [48, 55, 57, 55, 50, 55, 48, 55]
+  };
+
+  var PLAN = [
+    { mel: INTRO, bars: 2, bass: [48, 55], vol: .62, oct: 0, perc: .70 },
+    { mel: A, bars: 8, bass: LOW.lid6, vol: .80, oct: 0, perc: 1.00 },
+    { mel: B, bars: 8, bass: LOW.mid6, vol: .80, oct: 0, perc: 1.00 },
+    { mel: A, bars: 8, bass: LOW.lid6, vol: .84, oct: 12, perc: 1.12 },
+    { mel: OUTRO, bars: 2, bass: [48, 55], vol: .70, oct: 0, perc: .80 }
+  ];
+
+  /* 把整段 28 小节一次排进时间轴 */
+  function lay(t0) {
+    var bar = 0, s, b, k, sec, tb, bb, root, ev, tt, d, pat;
+
+    for (s = 0; s < PLAN.length; s++) {
+      sec = PLAN[s];
+      tb = t0 + bar * 4 * BEAT;
+
+      gong(tb, s === 0 ? 0.20 : 0.13);                     /* 每段落头一记锣 */
+
+      for (k = 0; k < sec.mel.length; k++) {               /* 笛：主旋律 */
+        ev = sec.mel[k];
+        tt = tb + ev[0] * BEAT;
+        d = Math.max(0.13, ev[1] * BEAT * 0.9);
+        dizi(tt, d, ev[2], 0.15 * sec.vol);
+        if (sec.oct) dizi(tt, d, ev[2] + sec.oct, 0.052 * sec.vol);   /* A' 叠一层高八度 */
+      }
+
+      for (b = 0; b < sec.bars; b++) {                     /* 大阮 / 古筝 / 锣鼓 */
+        bb = tb + b * 4 * BEAT;
+        root = sec.bass[b] || 48;
+
+        ruan(bb, root, BEAT * 1.9, 0.26 * sec.vol);
+        ruan(bb + 2 * BEAT, root, BEAT * 1.5, 0.17 * sec.vol);
+
+        pat = [0, 12, 19, 12];                             /* 八度与五度的分解，怎么排都协和 */
+        for (k = 0; k < pat.length; k++) {
+          zheng(bb + k * BEAT, root + 12 + pat[k], 0.062 * sec.vol, 1.5);
+        }
+
+        drum(bb, 0.40 * sec.perc, (bar + b) % 4 === 0 ? 178 : 196);
+        drum(bb + 2 * BEAT, 0.23 * sec.perc, 208);
+        drum(bb + 3.5 * BEAT, 0.14 * sec.perc, 232);       /* 拍后的加花 */
+        cymbal(bb + BEAT, 0.085 * sec.perc);
+        cymbal(bb + 3 * BEAT, 0.070 * sec.perc);
+
+        if ((bar + b) % 8 === 4) gong(bb, 0.10);
+      }
+      bar += sec.bars;
+    }
+  }
+
+  /* -------------------------------------------------------- 播放控制 */
+  function fade(from, to, sec) {
+    var t = ctx.currentTime;
+    from.gain.cancelScheduledValues(t);
+    from.gain.setValueAtTime(Math.max(0.0001, from.gain.value), t);
+    from.gain.linearRampToValueAtTime(Math.max(0.0001, to), t + sec);
+  }
+
+  function play() {
+    ensure();
+    if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
+    if (playing) return;
+    playing = true;
+
+    /* 每一轮循环用一个独立的门，停的时候整扇门淡出，旧音符自己走完 */
+    bus = ctx.createGain();
+    bus.gain.setValueAtTime(0.0001, ctx.currentTime);
+    bus.connect(master);
+    fade(bus, 1, 1.3);
+
+    clearTimeout(timer);
+    (function cycle(t) {
+      lay(t);
+      /* 提前 1.5 秒排下一轮；时间由音频时钟累加，不受 setTimeout 抖动影响 */
+      timer = setTimeout(function () { cycle(t + LOOP); }, (LOOP - 1.5) * 1000);
+    })(ctx.currentTime + 0.15);
+
+    btn.classList.add('on');
+    btn.setAttribute('aria-pressed', 'true');
+    if (txt) txt.textContent = '止乐';
+  }
+
+  function stop() {
+    if (!playing) return;
+    playing = false;
+    clearTimeout(timer); timer = null;
+
+    var dying = bus;
+    bus = null;
+    if (dying) {
+      fade(dying, 0.0001, 0.5);
+      setTimeout(function () { try { dying.disconnect(); } catch (e) {} }, 620);
+    }
+
+    btn.classList.remove('on');
+    btn.setAttribute('aria-pressed', 'false');
+    if (txt) txt.textContent = '奏乐';
+  }
+
+  function toggle() { if (playing) stop(); else play(); }
+
+  btn.addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    if (playing) stoppedByUser = true; else stoppedByUser = false;
+    toggle();
+  });
+  btn.addEventListener('pointerdown', function (ev) { ev.stopPropagation(); });
+
+  /* 首次与页面打交道时轻轻起乐 —— 浏览器的自动播放策略要求先有手势 */
+  function auto(ev) {
+    var t = ev && ev.target;
+    if (t && t.nodeType === 1 && btn.contains(t)) return;   /* 点的是开关自己，交给 click */
+    if (playing || stoppedByUser) return;
+    try { play(); } catch (e) {}
+  }
+  window.addEventListener('pointerdown', auto, { passive: true });
+  window.addEventListener('keydown', auto);
+  window.addEventListener('touchstart', auto, { passive: true });
+
+  window.__song2 = {
+    play: play, stop: stop, toggle: toggle,
+    isPlaying: function () { return playing; },
+    ctx: function () { return ctx; },
+    bus: function () { return bus; }
+  };
+})();
+</script>
+
+<script>
+/* ============================================================================
+   生日帖 · 互动脚本：翻卡片 / 小秘密 / 今日好运签
+   —— 独立一段，与撕日历、信卷、背景乐互不牵连。
+   ============================================================================ */
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------ 一 · 翻卡片 */
+  Array.prototype.forEach.call(document.querySelectorAll('.flip-card'), function (card) {
+    card.addEventListener('click', function () {
+      var on = card.classList.toggle('is-flipped');
+      card.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+  });
+
+  /* ------------------------------------------------ 二 · 小秘密 */
+  Array.prototype.forEach.call(document.querySelectorAll('.secret'), function (card) {
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-expanded', 'false');
+    card.tabIndex = 0;
+    function reveal() {
+      if (card.classList.contains('is-open')) return;
+      card.classList.add('is-open');
+      card.setAttribute('aria-expanded', 'true');
+    }
+    card.addEventListener('click', reveal);
+    card.addEventListener('keydown', function (ev) {
+      if (ev.key === ' ' || ev.key === 'Enter') { ev.preventDefault(); reveal(); }
+    });
+  });
+
+  /* ------------------------------------------------ 三 · 今日好运签（共 20 支）
+     [签级, 签文]。签文一律是「好运向好」的祝福，不写「今天适合做什么」，
+     免得读起来像日程提醒。                                       */
+  var FORTUNES = [
+    ['上上签', '今天会有一件没预料到的好事，正好落在你头上。'],
+    ['大吉',   '你惦记了很久的那件事，今天能松一口气。'],
+    ['上吉',   '新的一岁，脚下的路会比去年好走一点。'],
+    ['吉',     '想见的人会见到，想吃的菜会吃到。'],
+    ['中吉',   '一句顺口的问候，会让某个人记你一整天。'],
+    ['上上签', '你要的好运不在别处，就在明天照常起床的时候。'],
+    ['吉',     '今天少做一件为难自己的事，就算赢了。'],
+    ['大吉',   '会有一个你还没开口的机会，主动来找你。'],
+    ['中吉',   '走错的那条路，尽头有更好的风景。'],
+    ['上吉',   '身体会记得你对它的好，往后慢慢还给你。'],
+    ['吉',     '会收到一条消息，读完嘴角会往上走。'],
+    ['中吉',   '一直拖着的那件小事，今天有心情把它做完。'],
+    ['上上签', '你想要的，会以你没想过的样子来到你身边。'],
+    ['大吉',   '山会给你让路，路会给你留灯。'],
+    ['吉',     '今天随手做的一个决定，往后看是对的。'],
+    ['上吉',   '有人一直把你放在心上，只是没说出口。'],
+    ['中吉',   '很久没联系的人，今天会忽然想起你。'],
+    ['吉',     '会有一顿饭吃得特别香，别急着赶时间。'],
+    ['上上签', '你认真付出的那些，会以另一种方式回到你手上。'],
+    ['大吉',   '今天适合许愿，也适合马上动手。']
+  ];
+
+  (function luck() {
+    var tube = document.getElementById('tubeBtn');
+    var drawTxt = document.getElementById('tubeTxt');
+    var hint = document.getElementById('tubeHint');
+    var tEl = document.getElementById('luckText');
+    var mEl = document.getElementById('luckMeta');
+    var b1  = document.getElementById('luckDraw');
+    var b2  = document.getElementById('luckAgain');
+    if (!tEl || !mEl || !tube) return;
+
+    var last = -1, busy = false;
+    /* ?f=7 可指定第一支签（只给自测用，第二支起恢复随机） */
+    var forced = parseInt(new URLSearchParams(location.search).get('f'), 10);
+
+    function pick() {
+      var i;
+      if (forced >= 1 && forced <= FORTUNES.length) { i = forced - 1; forced = 0; }
+      else {
+        do { i = (Math.random() * FORTUNES.length) | 0; }
+        while (FORTUNES.length > 1 && i === last);
+      }
+      last = i;
+      return i;
+    }
+
+    /* 抽签四拍：收回上一支 → 晃筒 → 出签 → 签文铺开。
+       筒里的竹签一直留在原地，出签只是另有一支从筒口升起来。 */
+    function draw() {
+      if (busy) return;
+      busy = true;
+      var i = pick();
+
+      tube.classList.remove('is-out');
+      tEl.classList.add('swap');
+      mEl.classList.add('swap');
+
+      window.setTimeout(function () { tube.classList.add('is-drawing'); }, 240);
+      window.setTimeout(function () {
+        tube.classList.remove('is-drawing');
+        if (drawTxt) drawTxt.textContent = FORTUNES[i][0];
+        tube.classList.add('is-out');
+      }, 700);
+      window.setTimeout(function () {
+        tEl.textContent = FORTUNES[i][1];
+        mEl.innerHTML = '<b>' + FORTUNES[i][0] + '</b> · 第 ' + (i + 1)
+                      + ' 签 / 共 ' + FORTUNES.length + ' 支';
+        tEl.classList.remove('swap');
+        mEl.classList.remove('swap');
+        if (hint) hint.textContent = '再点一下 · 换一支';
+      }, 1050);
+      window.setTimeout(function () { busy = false; }, 1500);
+    }
+
+    tube.addEventListener('click', draw);
+    tube.addEventListener('keydown', function (ev) {
+      if (ev.key === ' ' || ev.key === 'Enter') { ev.preventDefault(); draw(); }
+    });
+    if (b1) b1.addEventListener('click', draw);
+    if (b2) b2.addEventListener('click', draw);
+  })();
+
+  window.__play = { fortunes: FORTUNES.length };
 })();
 </script>
 </body>
